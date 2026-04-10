@@ -26,11 +26,37 @@ export interface PageableCompte {
   size: number;
 }
 
+export interface Transaction {
+  id: number;
+  type: string;
+  montant: number;
+  dateTransaction: string;
+  description: string;
+  compteId: number;
+}
+
+export interface PageableTransaction {
+  content: Transaction[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}
+
+export interface TransactionFilters {
+  type?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  montantMin?: number;
+  montantMax?: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class CompteService {
   private readonly API_URL = `${environment.apiUrl}/api/comptes`;
+  private readonly TRANSACTION_API_URL = `${environment.apiUrl}/api/transactions`;
 
   constructor(private http: HttpClient) {}
 
@@ -52,5 +78,26 @@ export class CompteService {
 
   deleteCompte(id: number): Observable<void> {
     return this.http.delete<void>(`${this.API_URL}/${id}`);
+  }
+
+  getCompteTransactions(
+    compteId: number,
+    filters: TransactionFilters = {},
+    page: number = 0,
+    size: number = 10
+  ): Observable<PageableTransaction> {
+    const params = new URLSearchParams();
+    params.set('page', page.toString());
+    params.set('size', size.toString());
+
+    if (filters.type) params.set('type', filters.type);
+    if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
+    if (filters.dateTo) params.set('dateTo', filters.dateTo);
+    if (filters.montantMin != null) params.set('montantMin', filters.montantMin.toString());
+    if (filters.montantMax != null) params.set('montantMax', filters.montantMax.toString());
+
+    return this.http.get<PageableTransaction>(
+      `${this.TRANSACTION_API_URL}/me/compte/${compteId}?${params.toString()}`
+    );
   }
 }

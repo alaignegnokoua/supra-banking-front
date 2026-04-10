@@ -26,6 +26,81 @@
       <a [routerLink]="['/comptes', compte.id, 'edit']" class="btn btn-primary">Modifier</a>
     </div>
   </div>
+
+  <div class="history-card">
+    <h2>Historique des transactions</h2>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Type</label>
+        <select [(ngModel)]="txFilters.type">
+          <option value="">Tous</option>
+          <option value="depot">Dépôt</option>
+          <option value="retrait">Retrait</option>
+          <option value="virement">Virement</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Date début</label>
+        <input type="datetime-local" [(ngModel)]="txFilters.dateFrom" />
+      </div>
+
+      <div class="filter-group">
+        <label>Date fin</label>
+        <input type="datetime-local" [(ngModel)]="txFilters.dateTo" />
+      </div>
+
+      <div class="filter-group">
+        <label>Montant min</label>
+        <input type="number" min="0" step="0.01" [(ngModel)]="txFilters.montantMin" />
+      </div>
+
+      <div class="filter-group">
+        <label>Montant max</label>
+        <input type="number" min="0" step="0.01" [(ngModel)]="txFilters.montantMax" />
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-primary" (click)="applyTransactionFilters()">Filtrer</button>
+      <button class="btn btn-secondary" (click)="clearTransactionFilters()">Réinitialiser</button>
+    </div>
+
+    <div *ngIf="txLoading" class="loading">Chargement des transactions...</div>
+    <div *ngIf="txError" class="alert alert-danger">{{ txError }}</div>
+
+    <div *ngIf="!txLoading && !txError">
+      <table class="tx-table" *ngIf="transactions.length > 0; else noTx">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let tx of transactions">
+            <td>{{ tx.dateTransaction | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td><span class="badge">{{ tx.type }}</span></td>
+            <td>{{ tx.description || '-' }}</td>
+            <td class="amount">{{ tx.montant | number: '1.2-2' }} {{ compte.devise }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <ng-template #noTx>
+        <p class="empty">Aucune transaction trouvée pour ces filtres.</p>
+      </ng-template>
+
+      <div class="pagination" *ngIf="txTotalPages > 1">
+        <button class="btn btn-secondary" (click)="previousTxPage()" [disabled]="txPage === 0">Précédent</button>
+        <span>Page {{ txPage + 1 }} / {{ txTotalPages }}</span>
+        <button class="btn btn-secondary" (click)="nextTxPage()" [disabled]="txPage + 1 >= txTotalPages">Suivant</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div *ngIf="loading" class="container">
