@@ -23,8 +23,7 @@ export class RegisterComponent {
   ) {
     this.registerForm = this.fb.group(
       {
-        firstName: ['', [Validators.required, Validators.minLength(2)]],
-        lastName: ['', [Validators.required, Validators.minLength(2)]],
+        username: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]]
@@ -39,12 +38,8 @@ export class RegisterComponent {
     return password === confirmPassword ? null : { passwordMismatch: true };
   }
 
-  get firstName() {
-    return this.registerForm.get('firstName');
-  }
-
-  get lastName() {
-    return this.registerForm.get('lastName');
+  get username() {
+    return this.registerForm.get('username');
   }
 
   get email() {
@@ -68,8 +63,7 @@ export class RegisterComponent {
     this.error = null;
 
     const request: RegisterRequest = {
-      firstName: this.registerForm.value.firstName,
-      lastName: this.registerForm.value.lastName,
+      username: this.registerForm.value.username,
       email: this.registerForm.value.email,
       password: this.registerForm.value.password
     };
