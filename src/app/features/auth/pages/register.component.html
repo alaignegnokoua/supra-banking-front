@@ -1,0 +1,118 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h1>Créer un compte</h1>
+    
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">Prénom</label>
+          <input
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            class="form-control"
+            placeholder="Votre prénom"
+            [class.is-invalid]="firstName?.invalid && firstName?.touched"
+          />
+          <div *ngIf="firstName?.errors?.['required'] && firstName?.touched" class="error-message">
+            Prénom requis
+          </div>
+          <div *ngIf="firstName?.errors?.['minlength'] && firstName?.touched" class="error-message">
+            Minimum 2 caractères
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Nom</label>
+          <input
+            id="lastName"
+            type="text"
+            formControlName="lastName"
+            class="form-control"
+            placeholder="Votre nom"
+            [class.is-invalid]="lastName?.invalid && lastName?.touched"
+          />
+          <div *ngIf="lastName?.errors?.['required'] && lastName?.touched" class="error-message">
+            Nom requis
+          </div>
+          <div *ngIf="lastName?.errors?.['minlength'] && lastName?.touched" class="error-message">
+            Minimum 2 caractères
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="form-control"
+          placeholder="Entrez votre email"
+          [class.is-invalid]="email?.invalid && email?.touched"
+        />
+        <div *ngIf="email?.errors?.['required'] && email?.touched" class="error-message">
+          Email requis
+        </div>
+        <div *ngIf="email?.errors?.['email'] && email?.touched" class="error-message">
+          Email invalide
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="form-control"
+          placeholder="Minimum 6 caractères"
+          [class.is-invalid]="password?.invalid && password?.touched"
+        />
+        <div *ngIf="password?.errors?.['required'] && password?.touched" class="error-message">
+          Mot de passe requis
+        </div>
+        <div *ngIf="password?.errors?.['minlength'] && password?.touched" class="error-message">
+          Minimum 6 caractères
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirmer le mot de passe</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          class="form-control"
+          placeholder="Confirmez votre mot de passe"
+          [class.is-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+        />
+        <div *ngIf="confirmPassword?.errors?.['required'] && confirmPassword?.touched" class="error-message">
+          Confirmation requise
+        </div>
+        <div *ngIf="registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched" class="error-message">
+          Les mots de passe ne correspondent pas
+        </div>
+      </div>
+
+      <div *ngIf="error" class="alert alert-danger">
+        {{ error }}
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-block"
+        [disabled]="registerForm.invalid || loading"
+      >
+        {{ loading ? 'Création en cours...' : 'S\'inscrire' }}
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>Vous avez déjà un compte?</p>
+      <button class="btn btn-link" (click)="navigateToLogin()">
+        Se connecter
+      </button>
+    </div>
+  </div>
+</div>
