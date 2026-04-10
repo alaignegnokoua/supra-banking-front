@@ -1,0 +1,37 @@
+<div class="container" *ngIf="!loading && compte">
+  <div class="detail-card">
+    <h1>{{ compte.numero }}</h1>
+    
+    <div class="detail-grid">
+      <div class="detail-item">
+        <label>Type</label>
+        <p>{{ compte.type }}</p>
+      </div>
+      <div class="detail-item">
+        <label>Solde</label>
+        <p class="amount">{{ compte.solde | number: '1.2-2' }} {{ compte.devise }}</p>
+      </div>
+      <div class="detail-item">
+        <label>Devise</label>
+        <p>{{ compte.devise }}</p>
+      </div>
+      <div class="detail-item">
+        <label>Date de Création</label>
+        <p>{{ compte.dateCreation | date: 'dd/MM/yyyy' }}</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a routerLink="/comptes" class="btn btn-secondary">Retour</a>
+      <a [routerLink]="['/comptes', compte.id, 'edit']" class="btn btn-primary">Modifier</a>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="container">
+  <p>Chargement...</p>
+</div>
+
+<div *ngIf="error" class="container">
+  <div class="alert alert-danger">{{ error }}</div>
+</div>
