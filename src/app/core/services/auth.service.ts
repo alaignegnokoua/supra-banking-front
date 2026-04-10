@@ -28,6 +28,11 @@ export interface CurrentUser {
   email: string;
   enabled: boolean;
   roles: string[];
+  clientId?: number;
+  clientNom?: string;
+  clientPrenom?: string;
+  clientEmail?: string;
+  clientTelephone?: string;
 }
 
 @Injectable({

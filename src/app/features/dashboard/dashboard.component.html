@@ -8,7 +8,7 @@
       <a routerLink="/transactions" routerLinkActive="active">Transactions</a>
     </div>
     <div class="navbar-user" *ngIf="currentUser$ | async as user">
-      <span>{{ user.username }}</span>
+      <span>{{ (user.clientPrenom || '') + ((user.clientPrenom && user.clientNom) ? ' ' : '') + (user.clientNom || user.username) }}</span>
       <button (click)="logout()" class="btn btn-logout">Déconnexion</button>
     </div>
   </nav>
