@@ -1,0 +1,23 @@
+<div class="dashboard">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <h1>SupraBanking</h1>
+    </div>
+    <div class="navbar-menu">
+      <a routerLink="/comptes" routerLinkActive="active">Comptes</a>
+      <a routerLink="/transactions" routerLinkActive="active">Transactions</a>
+    </div>
+    <div class="navbar-user" *ngIf="currentUser$ | async as user">
+      <span>{{ user.firstName }} {{ user.lastName }}</span>
+      <button (click)="logout()" class="btn btn-logout">Déconnexion</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-content">
+    <div class="welcome-card">
+      <h2>Bienvenue sur SupraBanking!</h2>
+      <p>Gérez vos comptes et transactions en toute sécurité.</p>
+      <a routerLink="/comptes" class="btn btn-primary">Voir mes comptes</a>
+    </div>
+  </div>
+</div>
