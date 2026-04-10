@@ -22,13 +22,13 @@ export class LoginComponent {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  get email() {
-    return this.loginForm.get('email');
+  get username() {
+    return this.loginForm.get('username');
   }
 
   get password() {
@@ -44,7 +44,7 @@ export class LoginComponent {
     this.error = null;
 
     const request: LoginRequest = {
-      email: this.loginForm.value.email,
+      username: this.loginForm.value.username,
       password: this.loginForm.value.password
     };
 
@@ -53,7 +53,7 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.error = 'Email ou mot de passe incorrect';
+        this.error = 'Username ou mot de passe incorrect';
         this.loading = false;
       }
     });
