@@ -4,20 +4,17 @@
     
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
       <div class="form-group">
-        <label for="email">Email</label>
+        <label for="username">Username</label>
         <input
-          id="email"
-          type="email"
-          formControlName="email"
+          id="username"
+          type="text"
+          formControlName="username"
           class="form-control"
-          placeholder="Entrez votre email"
-          [class.is-invalid]="email?.invalid && email?.touched"
+          placeholder="Entrez votre username"
+          [class.is-invalid]="username?.invalid && username?.touched"
         />
-        <div *ngIf="email?.errors?.['required'] && email?.touched" class="error-message">
-          Email requis
-        </div>
-        <div *ngIf="email?.errors?.['email'] && email?.touched" class="error-message">
-          Email invalide
+        <div *ngIf="username?.errors?.['required'] && username?.touched" class="error-message">
+          Username requis
         </div>
       </div>
 
