@@ -1,30 +1,32 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, of } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface RegisterRequest {
-  firstName: string;
-  lastName: string;
+  username: string;
   email: string;
   password: string;
 }
 
 export interface AuthResponse {
   token: string;
-  user: CurrentUser;
+  tokenType?: string;
+  expiresIn?: number;
+  username?: string;
+  roles?: string[];
 }
 
 export interface CurrentUser {
   id: number;
+  username: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  enabled: boolean;
   roles: string[];
 }
 
@@ -88,8 +90,8 @@ export class AuthService {
 
   private handleAuthResponse(response: AuthResponse): void {
     localStorage.setItem('auth_token', response.token);
-    this.currentUserSubject.next(response.user);
     this.isAuthenticatedSubject.next(true);
+    this.loadCurrentUser();
   }
 
   isInRole(role: string): boolean {
@@ -98,14 +100,14 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
-    return this.isInRole('ADMIN');
+    return this.isInRole('ROLE_ADMIN');
   }
 
   isAgent(): boolean {
-    return this.isInRole('AGENT');
+    return this.isInRole('ROLE_AGENT');
   }
 
   isClient(): boolean {
-    return this.isInRole('CLIENT');
+    return this.isInRole('ROLE_CLIENT');
   }
 }
