@@ -6,6 +6,7 @@ import { environment } from '../../../../environments/environment';
 export interface Compte {
   id: number;
   numero: string;
+  numeroCompte?: string;
   solde: number;
   devise: string;
   type: string;
@@ -49,6 +50,13 @@ export interface TransactionFilters {
   dateTo?: string;
   montantMin?: number;
   montantMax?: number;
+}
+
+export interface VirementInterneRequest {
+  compteSourceId: number;
+  compteDestinationId: number;
+  montant: number;
+  description?: string;
 }
 
 @Injectable({
@@ -99,5 +107,9 @@ export class CompteService {
     return this.http.get<PageableTransaction>(
       `${this.TRANSACTION_API_URL}/me/compte/${compteId}?${params.toString()}`
     );
+  }
+
+  effectuerVirementInterne(request: VirementInterneRequest): Observable<void> {
+    return this.http.post<void>(`${this.TRANSACTION_API_URL}/me/virement-interne`, request);
   }
 }

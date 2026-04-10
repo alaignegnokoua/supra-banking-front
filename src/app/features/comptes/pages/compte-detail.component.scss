@@ -173,6 +173,12 @@
   padding: 1rem;
   border-radius: 4px;
 
+  &.alert-success {
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    color: #0f5132;
+  }
+
   &.alert-danger {
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;

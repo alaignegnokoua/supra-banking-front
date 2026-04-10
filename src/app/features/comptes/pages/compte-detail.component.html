@@ -1,6 +1,6 @@
 <div class="container" *ngIf="!loading && compte">
   <div class="detail-card">
-    <h1>{{ compte.numero }}</h1>
+    <h1>{{ compte.numeroCompte || compte.numero }}</h1>
     
     <div class="detail-grid">
       <div class="detail-item">
@@ -25,6 +25,39 @@
       <a routerLink="/comptes" class="btn btn-secondary">Retour</a>
       <a [routerLink]="['/comptes', compte.id, 'edit']" class="btn btn-primary">Modifier</a>
     </div>
+  </div>
+
+  <div class="history-card">
+    <h2>Virement interne</h2>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Compte destination</label>
+        <select [(ngModel)]="transferDestinationId">
+          <option [ngValue]="null">Sélectionner...</option>
+          <option *ngFor="let c of myComptes" [ngValue]="c.id">{{ getCompteLabel(c) }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Montant</label>
+        <input type="number" min="0.01" step="0.01" [(ngModel)]="transferAmount" />
+      </div>
+
+      <div class="filter-group">
+        <label>Description</label>
+        <input type="text" maxlength="200" [(ngModel)]="transferDescription" placeholder="Optionnel" />
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-primary" (click)="submitInternalTransfer()" [disabled]="transferLoading">
+        {{ transferLoading ? 'Traitement...' : 'Effectuer le virement' }}
+      </button>
+    </div>
+
+    <div *ngIf="transferSuccess" class="alert alert-success">{{ transferSuccess }}</div>
+    <div *ngIf="transferError" class="alert alert-danger">{{ transferError }}</div>
   </div>
 
   <div class="history-card">

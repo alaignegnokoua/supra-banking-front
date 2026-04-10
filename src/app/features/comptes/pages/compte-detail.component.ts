@@ -18,6 +18,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class CompteDetailComponent implements OnInit {
   compte: Compte | null = null;
+  myComptes: Compte[] = [];
   transactions: Transaction[] = [];
   loading = true;
   error: string | null = null;
@@ -28,6 +29,13 @@ export class CompteDetailComponent implements OnInit {
   txPage = 0;
   txSize = 5;
   txTotalPages = 0;
+
+  transferDestinationId: number | null = null;
+  transferAmount: number | null = null;
+  transferDescription = '';
+  transferLoading = false;
+  transferError: string | null = null;
+  transferSuccess: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,11 +54,24 @@ export class CompteDetailComponent implements OnInit {
       next: (data) => {
         this.compte = data;
         this.loading = false;
+        this.loadMyComptes();
         this.loadTransactions();
       },
       error: (err) => {
         this.error = 'Compte non trouvé';
         this.loading = false;
+      }
+    });
+  }
+
+  loadMyComptes(): void {
+    this.compteService.getComptes(0, 100).subscribe({
+      next: (response) => {
+        const currentId = this.compte?.id;
+        this.myComptes = response.content.filter(c => c.id !== currentId);
+      },
+      error: () => {
+        this.myComptes = [];
       }
     });
   }
@@ -90,6 +111,45 @@ export class CompteDetailComponent implements OnInit {
   clearTransactionFilters(): void {
     this.txFilters = {};
     this.loadTransactions(0);
+  }
+
+  submitInternalTransfer(): void {
+    this.transferError = null;
+    this.transferSuccess = null;
+
+    if (!this.compte?.id) {
+      return;
+    }
+
+    if (!this.transferDestinationId || !this.transferAmount || this.transferAmount <= 0) {
+      this.transferError = 'Veuillez sélectionner un compte destination et un montant valide';
+      return;
+    }
+
+    this.transferLoading = true;
+    this.compteService.effectuerVirementInterne({
+      compteSourceId: this.compte.id,
+      compteDestinationId: this.transferDestinationId,
+      montant: this.transferAmount,
+      description: this.transferDescription?.trim() || undefined
+    }).subscribe({
+      next: () => {
+        this.transferLoading = false;
+        this.transferSuccess = 'Virement interne effectué avec succès';
+        this.transferAmount = null;
+        this.transferDescription = '';
+        this.loadCompte(this.compte!.id);
+      },
+      error: (err) => {
+        this.transferLoading = false;
+        this.transferError = err?.error?.message || 'Échec du virement interne';
+      }
+    });
+  }
+
+  getCompteLabel(compte: Compte): string {
+    const numero = compte.numeroCompte || compte.numero || `Compte #${compte.id}`;
+    return `${numero} (Solde: ${compte.solde ?? 0})`;
   }
 
   previousTxPage(): void {
