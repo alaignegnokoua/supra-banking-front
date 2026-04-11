@@ -25,6 +25,9 @@ export class ProfileComponent implements OnInit {
   audits: OperationAuditItem[] = [];
   auditsLoading = false;
   auditsError: string | null = null;
+  auditsPage = 0;
+  auditsSize = 5;
+  auditsTotalPages = 0;
 
   readonly form = this.fb.nonNullable.group({
     nom: ['', [Validators.required, Validators.maxLength(100)]],
@@ -70,7 +73,7 @@ export class ProfileComponent implements OnInit {
     });
 
     this.authService.loadCurrentUser();
-    this.loadAudits();
+    this.loadAudits(0);
   }
 
   submit(): void {
@@ -156,13 +159,15 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  loadAudits(): void {
+  loadAudits(page: number = this.auditsPage): void {
     this.auditsLoading = true;
     this.auditsError = null;
+    this.auditsPage = page;
 
-    this.auditService.getMyAudits().subscribe({
-      next: (items) => {
-        this.audits = items;
+    this.auditService.getMyAuditsPage(this.auditsPage, this.auditsSize).subscribe({
+      next: (response) => {
+        this.audits = response.content;
+        this.auditsTotalPages = response.totalPages;
         this.auditsLoading = false;
       },
       error: () => {
@@ -170,5 +175,17 @@ export class ProfileComponent implements OnInit {
         this.auditsLoading = false;
       }
     });
+  }
+
+  previousAuditsPage(): void {
+    if (this.auditsPage > 0) {
+      this.loadAudits(this.auditsPage - 1);
+    }
+  }
+
+  nextAuditsPage(): void {
+    if (this.auditsPage + 1 < this.auditsTotalPages) {
+      this.loadAudits(this.auditsPage + 1);
+    }
   }
 }

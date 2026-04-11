@@ -97,7 +97,7 @@
   <section class="profile-card">
     <div class="audit-header">
       <h3>Historique des opérations sensibles</h3>
-      <button class="btn btn-secondary" type="button" (click)="loadAudits()">Rafraîchir</button>
+      <button class="btn btn-secondary" type="button" (click)="loadAudits(0)">Rafraîchir</button>
     </div>
 
     <div *ngIf="auditsError" class="alert alert-error">{{ auditsError }}</div>
@@ -125,5 +125,15 @@
     </table>
 
     <div *ngIf="!auditsLoading && audits.length === 0" class="muted">Aucune opération auditée pour le moment.</div>
+
+    <div class="audit-pagination" *ngIf="!auditsLoading && auditsTotalPages > 0">
+      <button class="btn btn-secondary" type="button" [disabled]="auditsPage === 0" (click)="previousAuditsPage()">
+        Précédent
+      </button>
+      <span>Page {{ auditsPage + 1 }} / {{ auditsTotalPages }}</span>
+      <button class="btn btn-secondary" type="button" [disabled]="auditsPage + 1 >= auditsTotalPages" (click)="nextAuditsPage()">
+        Suivant
+      </button>
+    </div>
   </section>
 </div>
