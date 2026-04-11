@@ -369,7 +369,7 @@ export class CompteDetailComponent implements OnInit {
     }
 
     this.internalRiskLoading = true;
-    this.compteService.getMyTransferRiskPreview(this.transferAmount).subscribe({
+    this.compteService.getMyTransferRiskPreview(this.transferAmount, 'INTERNE').subscribe({
       next: (risk) => {
         this.internalRisk = risk;
         this.internalRiskLoading = false;
@@ -390,7 +390,7 @@ export class CompteDetailComponent implements OnInit {
     }
 
     this.externalRiskLoading = true;
-    this.compteService.getMyTransferRiskPreview(this.extAmount).subscribe({
+    this.compteService.getMyTransferRiskPreview(this.extAmount, 'EXTERNE').subscribe({
       next: (risk) => {
         this.externalRisk = risk;
         this.externalRiskLoading = false;

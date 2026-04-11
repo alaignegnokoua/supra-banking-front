@@ -169,8 +169,8 @@ export class CompteService {
     return this.http.get<TransferLimitStatus>(`${this.TRANSACTION_API_URL}/me/limits`);
   }
 
-  getMyTransferRiskPreview(montant: number): Observable<TransferRiskAssessment> {
-    return this.http.get<TransferRiskAssessment>(`${this.TRANSACTION_API_URL}/me/risk-preview?montant=${montant}`);
+  getMyTransferRiskPreview(montant: number, type: 'INTERNE' | 'EXTERNE'): Observable<TransferRiskAssessment> {
+    return this.http.get<TransferRiskAssessment>(`${this.TRANSACTION_API_URL}/me/risk-preview?montant=${montant}&type=${type}`);
   }
 
   getMyBeneficiaires(): Observable<Beneficiaire[]> {
