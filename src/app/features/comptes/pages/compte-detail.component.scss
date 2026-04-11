@@ -30,6 +30,19 @@
   }
 }
 
+.audit-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin-bottom: 2rem;
+
+  h2 {
+    margin: 0 0 1.5rem 0;
+    color: #333;
+  }
+}
+
 .limits-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -113,6 +126,82 @@
   .amount {
     color: #667eea;
     font-weight: 600;
+  }
+}
+
+.audit-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+  }
+
+  th {
+    font-weight: 600;
+    color: #555;
+    background: #fafafa;
+  }
+
+  tr.blocked {
+    background-color: #fff5f5;
+  }
+
+  .amount {
+    color: #667eea;
+    font-weight: 600;
+  }
+
+  .message {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9rem;
+  }
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  &.success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+
+  &.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+}
+
+.risk-badge {
+  display: inline-block;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  &.low {
+    background-color: #d1e7dd;
+    color: #0f5132;
+  }
+
+  &.medium {
+    background-color: #fff3cd;
+    color: #664d03;
+  }
+
+  &.high {
+    background-color: #f8d7da;
+    color: #721c24;
   }
 }
 

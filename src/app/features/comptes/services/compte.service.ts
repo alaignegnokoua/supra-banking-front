@@ -110,6 +110,31 @@ export interface TransferRiskAssessment {
   dailyCountScore: number;
 }
 
+export interface AuditRecord {
+  id: number;
+  operationType: string;
+  status: string;
+  message: string;
+  createdAt: string;
+  clientId: number;
+  compteSourceId?: number;
+  compteDestinationId?: number;
+  beneficiaireId?: number;
+  montant?: number;
+  riskScore?: number;
+  riskLevel?: string;
+  riskBlocked?: boolean;
+  riskDetails?: any;
+}
+
+export interface PageableAuditRecord {
+  content: AuditRecord[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -179,6 +204,10 @@ export class CompteService {
 
   getMyTransferRiskPreview(montant: number, type: 'INTERNE' | 'EXTERNE'): Observable<TransferRiskAssessment> {
     return this.http.get<TransferRiskAssessment>(`${this.TRANSACTION_API_URL}/me/risk-preview?montant=${montant}&type=${type}`);
+  }
+
+  getMyTransferAuditHistory(page: number = 0, size: number = 10): Observable<PageableAuditRecord> {
+    return this.http.get<PageableAuditRecord>(`${this.TRANSACTION_API_URL}/me/audit?page=${page}&size=${size}`);
   }
 
   getMyBeneficiaires(): Observable<Beneficiaire[]> {

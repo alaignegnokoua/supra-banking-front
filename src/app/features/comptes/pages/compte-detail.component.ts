@@ -9,7 +9,8 @@ import {
   Beneficiaire,
   BeneficiaireRequest,
   TransferLimitStatus,
-  TransferRiskAssessment
+  TransferRiskAssessment,
+  AuditRecord
 } from '../services/compte.service';
 import { FormsModule } from '@angular/forms';
 
@@ -64,6 +65,13 @@ export class CompteDetailComponent implements OnInit {
   externalRisk: TransferRiskAssessment | null = null;
   externalRiskLoading = false;
 
+  auditHistory: AuditRecord[] = [];
+  auditHistoryLoading = false;
+  auditHistoryError: string | null = null;
+  auditPage = 0;
+  auditSize = 10;
+  auditTotalPages = 0;
+
   constructor(
     private route: ActivatedRoute,
     private compteService: CompteService
@@ -85,6 +93,7 @@ export class CompteDetailComponent implements OnInit {
         this.loadBeneficiaires();
         this.loadTransactions();
         this.loadTransferLimits();
+        this.loadAuditHistory();
       },
       error: (err) => {
         this.error = 'Compte non trouvé';
@@ -400,5 +409,35 @@ export class CompteDetailComponent implements OnInit {
         this.externalRiskLoading = false;
       }
     });
+  }
+
+  loadAuditHistory(): void {
+    this.auditHistoryLoading = true;
+    this.auditHistoryError = null;
+    this.compteService.getMyTransferAuditHistory(this.auditPage, this.auditSize).subscribe({
+      next: (response) => {
+        this.auditHistory = response.content;
+        this.auditTotalPages = response.totalPages;
+        this.auditHistoryLoading = false;
+      },
+      error: (err) => {
+        this.auditHistoryError = 'Erreur lors du chargement de l\'historique d\'audit';
+        this.auditHistoryLoading = false;
+      }
+    });
+  }
+
+  nextAuditPage(): void {
+    if (this.auditPage + 1 < this.auditTotalPages) {
+      this.auditPage++;
+      this.loadAuditHistory();
+    }
+  }
+
+  previousAuditPage(): void {
+    if (this.auditPage > 0) {
+      this.auditPage--;
+      this.loadAuditHistory();
+    }
   }
 }
