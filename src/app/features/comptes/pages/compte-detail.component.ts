@@ -399,7 +399,7 @@ export class CompteDetailComponent implements OnInit {
     }
 
     this.externalRiskLoading = true;
-    this.compteService.getMyTransferRiskPreview(this.extAmount, 'EXTERNE').subscribe({
+    this.compteService.getMyTransferRiskPreview(this.extAmount, 'EXTERNE', this.extBeneficiaireId).subscribe({
       next: (risk) => {
         this.externalRisk = risk;
         this.externalRiskLoading = false;
