@@ -30,6 +30,7 @@
         <div class="actions">
           <button class="btn btn-refresh" (click)="loadNotifications()">Rafraîchir</button>
           <button class="btn btn-mark-all" *ngIf="unreadCount > 0" (click)="markAllAsRead()">Tout marquer lu</button>
+          <button class="btn btn-clear-read" (click)="clearReadNotifications()">Nettoyer lues</button>
         </div>
       </div>
 
@@ -43,9 +44,14 @@
             <p>{{ n.contenu }}</p>
             <small>{{ n.dateEnvoi | date:'dd/MM/yyyy HH:mm' }}</small>
           </div>
-          <button *ngIf="n.statut === 'NON_LU'" class="btn btn-mark" (click)="markAsRead(n.id)">
-            Marquer lu
-          </button>
+          <div class="item-actions">
+            <button *ngIf="n.statut === 'NON_LU'" class="btn btn-mark" (click)="markAsRead(n.id)">
+              Marquer lu
+            </button>
+            <button class="btn btn-delete" (click)="deleteNotification(n.id)">
+              Supprimer
+            </button>
+          </div>
         </li>
       </ul>
     </div>

@@ -60,6 +60,24 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  deleteNotification(id: number): void {
+    this.notificationService.deleteMyNotification(id).subscribe({
+      next: () => this.loadNotifications(),
+      error: () => {
+        this.notificationError = 'Impossible de supprimer la notification';
+      }
+    });
+  }
+
+  clearReadNotifications(): void {
+    this.notificationService.deleteMyReadNotifications().subscribe({
+      next: () => this.loadNotifications(),
+      error: () => {
+        this.notificationError = 'Impossible de nettoyer les notifications lues';
+      }
+    });
+  }
+
   private loadUnreadCount(): void {
     this.notificationService.getUnreadCount().subscribe({
       next: (response) => {

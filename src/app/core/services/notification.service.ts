@@ -37,4 +37,12 @@ export class NotificationService {
   getUnreadCount(): Observable<NotificationUnreadCount> {
     return this.http.get<NotificationUnreadCount>(`${this.API_URL}/me/unread-count`);
   }
+
+  deleteMyNotification(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/me/${id}`);
+  }
+
+  deleteMyReadNotifications(): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/me/read`);
+  }
 }

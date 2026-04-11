@@ -147,6 +147,11 @@
   gap: 0.5rem;
 }
 
+.item-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
 .notifications-list {
   list-style: none;
   padding: 0;
@@ -179,8 +184,18 @@
 
 .btn-refresh,
 .btn-mark,
-.btn-mark-all {
+.btn-mark-all,
+.btn-clear-read {
   background: #667eea;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background: #ef4444;
   color: white;
   border: none;
   padding: 0.4rem 0.8rem;
