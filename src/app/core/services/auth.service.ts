@@ -42,6 +42,11 @@ export interface UpdateProfileRequest {
   telephone?: string;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -96,6 +101,10 @@ export class AuthService {
     return this.http.put<CurrentUser>(`${this.API_URL}/me/profile`, request).pipe(
       tap((user) => this.currentUserSubject.next(user))
     );
+  }
+
+  changePassword(request: ChangePasswordRequest): Observable<void> {
+    return this.http.put<void>(`${this.API_URL}/me/password`, request);
   }
 
   getToken(): string | null {

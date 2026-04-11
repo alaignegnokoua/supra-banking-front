@@ -5,6 +5,8 @@
   </div>
 
   <form [formGroup]="form" (ngSubmit)="submit()" class="profile-card">
+    <h3>Informations personnelles</h3>
+
     <div class="field">
       <label for="nom">Nom</label>
       <input id="nom" type="text" formControlName="nom" />
@@ -33,6 +35,41 @@
 
     <button class="btn btn-primary" type="submit" [disabled]="loading">
       {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
+  </form>
+
+  <form [formGroup]="passwordForm" (ngSubmit)="submitPassword()" class="profile-card">
+    <h3>Changer mon mot de passe</h3>
+
+    <div class="field">
+      <label for="currentPassword">Mot de passe actuel</label>
+      <input id="currentPassword" type="password" formControlName="currentPassword" />
+      <small *ngIf="passwordForm.controls.currentPassword.touched && passwordForm.controls.currentPassword.invalid">
+        Le mot de passe actuel est obligatoire
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="newPassword">Nouveau mot de passe</label>
+      <input id="newPassword" type="password" formControlName="newPassword" />
+      <small *ngIf="passwordForm.controls.newPassword.touched && passwordForm.controls.newPassword.invalid">
+        Minimum 6 caractères
+      </small>
+    </div>
+
+    <div class="field">
+      <label for="confirmPassword">Confirmer le nouveau mot de passe</label>
+      <input id="confirmPassword" type="password" formControlName="confirmPassword" />
+      <small *ngIf="passwordForm.controls.confirmPassword.touched && passwordForm.controls.confirmPassword.invalid">
+        La confirmation est obligatoire
+      </small>
+    </div>
+
+    <div *ngIf="passwordError" class="alert alert-error">{{ passwordError }}</div>
+    <div *ngIf="passwordSuccess" class="alert alert-success">{{ passwordSuccess }}</div>
+
+    <button class="btn btn-primary" type="submit" [disabled]="passwordLoading">
+      {{ passwordLoading ? 'Mise à jour...' : 'Mettre à jour le mot de passe' }}
     </button>
   </form>
 </div>
