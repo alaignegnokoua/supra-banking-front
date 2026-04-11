@@ -27,5 +27,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/transactions/transactions.module').then(m => m.TransactionsModule)
   },
+  {
+    path: 'profil',
+    canActivate: [authGuard],
+    loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule)
+  },
   { path: '**', redirectTo: '/dashboard' }
 ];

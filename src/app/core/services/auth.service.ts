@@ -35,6 +35,13 @@ export interface CurrentUser {
   clientTelephone?: string;
 }
 
+export interface UpdateProfileRequest {
+  nom: string;
+  prenom: string;
+  email: string;
+  telephone?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -83,6 +90,12 @@ export class AuthService {
         )
         .subscribe();
     }
+  }
+
+  updateProfile(request: UpdateProfileRequest): Observable<CurrentUser> {
+    return this.http.put<CurrentUser>(`${this.API_URL}/me/profile`, request).pipe(
+      tap((user) => this.currentUserSubject.next(user))
+    );
   }
 
   getToken(): string | null {

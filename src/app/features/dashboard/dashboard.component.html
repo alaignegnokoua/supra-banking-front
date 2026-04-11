@@ -6,6 +6,7 @@
     <div class="navbar-menu">
       <a routerLink="/comptes" routerLinkActive="active">Comptes</a>
       <a routerLink="/transactions" routerLinkActive="active">Transactions</a>
+      <a routerLink="/profil" routerLinkActive="active">Profil</a>
     </div>
     <div class="navbar-user" *ngIf="currentUser$ | async as user">
       <span>{{ (user.clientPrenom || '') + ((user.clientPrenom && user.clientNom) ? ' ' : '') + (user.clientNom || user.username) }}</span>

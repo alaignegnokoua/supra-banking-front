@@ -1,0 +1,38 @@
+<div class="profile-page">
+  <div class="header">
+    <h2>Mon profil</h2>
+    <a routerLink="/dashboard" class="btn btn-secondary">Retour dashboard</a>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="profile-card">
+    <div class="field">
+      <label for="nom">Nom</label>
+      <input id="nom" type="text" formControlName="nom" />
+      <small *ngIf="form.controls.nom.touched && form.controls.nom.invalid">Nom obligatoire</small>
+    </div>
+
+    <div class="field">
+      <label for="prenom">Prénom</label>
+      <input id="prenom" type="text" formControlName="prenom" />
+      <small *ngIf="form.controls.prenom.touched && form.controls.prenom.invalid">Prénom obligatoire</small>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" />
+      <small *ngIf="form.controls.email.touched && form.controls.email.invalid">Email invalide</small>
+    </div>
+
+    <div class="field">
+      <label for="telephone">Téléphone</label>
+      <input id="telephone" type="text" formControlName="telephone" />
+    </div>
+
+    <div *ngIf="error" class="alert alert-error">{{ error }}</div>
+    <div *ngIf="success" class="alert alert-success">{{ success }}</div>
+
+    <button class="btn btn-primary" type="submit" [disabled]="loading">
+      {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
+  </form>
+</div>
