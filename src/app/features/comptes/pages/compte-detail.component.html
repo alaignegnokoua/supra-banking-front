@@ -27,6 +27,32 @@
     </div>
   </div>
 
+  <div class="history-card" *ngIf="transferLimits || transferLimitsLoading || transferLimitsError">
+    <h2>Plafonds de virement</h2>
+
+    <div *ngIf="transferLimitsLoading" class="loading">Chargement des plafonds...</div>
+    <div *ngIf="transferLimitsError" class="alert alert-danger">{{ transferLimitsError }}</div>
+
+    <div class="limits-grid" *ngIf="transferLimits">
+      <div class="limit-item">
+        <label>Plafond unitaire</label>
+        <p>{{ transferLimits.maxSingleAmount | number: '1.2-2' }} {{ compte.devise }}</p>
+      </div>
+      <div class="limit-item">
+        <label>Plafond journalier</label>
+        <p>{{ transferLimits.maxDailyTotal | number: '1.2-2' }} {{ compte.devise }}</p>
+      </div>
+      <div class="limit-item">
+        <label>Déjà viré aujourd'hui</label>
+        <p>{{ transferLimits.todayOutgoingTotal | number: '1.2-2' }} {{ compte.devise }}</p>
+      </div>
+      <div class="limit-item">
+        <label>Reste aujourd'hui</label>
+        <p class="amount">{{ transferLimits.remainingDailyAmount | number: '1.2-2' }} {{ compte.devise }}</p>
+      </div>
+    </div>
+  </div>
+
   <div class="history-card">
     <h2>Virement interne</h2>
 

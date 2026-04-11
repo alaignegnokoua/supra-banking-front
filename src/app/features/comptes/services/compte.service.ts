@@ -83,6 +83,13 @@ export interface VirementExterneRequest {
   description?: string;
 }
 
+export interface TransferLimitStatus {
+  maxSingleAmount: number;
+  maxDailyTotal: number;
+  todayOutgoingTotal: number;
+  remainingDailyAmount: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -144,6 +151,10 @@ export class CompteService {
 
   effectuerVirementExterne(request: VirementExterneRequest): Observable<void> {
     return this.http.post<void>(`${this.TRANSACTION_API_URL}/me/virement-externe`, request);
+  }
+
+  getMyTransferLimits(): Observable<TransferLimitStatus> {
+    return this.http.get<TransferLimitStatus>(`${this.TRANSACTION_API_URL}/me/limits`);
   }
 
   getMyBeneficiaires(): Observable<Beneficiaire[]> {

@@ -7,7 +7,8 @@ import {
   Transaction,
   TransactionFilters,
   Beneficiaire,
-  BeneficiaireRequest
+  BeneficiaireRequest,
+  TransferLimitStatus
 } from '../services/compte.service';
 import { FormsModule } from '@angular/forms';
 
@@ -53,6 +54,10 @@ export class CompteDetailComponent implements OnInit {
   extError: string | null = null;
   extSuccess: string | null = null;
 
+  transferLimits: TransferLimitStatus | null = null;
+  transferLimitsLoading = false;
+  transferLimitsError: string | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private compteService: CompteService
@@ -73,6 +78,7 @@ export class CompteDetailComponent implements OnInit {
         this.loadMyComptes();
         this.loadBeneficiaires();
         this.loadTransactions();
+        this.loadTransferLimits();
       },
       error: (err) => {
         this.error = 'Compte non trouvé';
@@ -140,6 +146,12 @@ export class CompteDetailComponent implements OnInit {
 
     if (!this.transferDestinationId || !this.transferAmount || this.transferAmount <= 0) {
       this.transferError = 'Veuillez sélectionner un compte destination et un montant valide';
+      return;
+    }
+
+    const transferLimitError = this.validateAmountAgainstLimits(this.transferAmount);
+    if (transferLimitError) {
+      this.transferError = transferLimitError;
       return;
     }
 
@@ -234,6 +246,12 @@ export class CompteDetailComponent implements OnInit {
       return;
     }
 
+    const transferLimitError = this.validateAmountAgainstLimits(this.extAmount);
+    if (transferLimitError) {
+      this.extError = transferLimitError;
+      return;
+    }
+
     this.extLoading = true;
     this.compteService.effectuerVirementExterne({
       compteSourceId: this.compte.id,
@@ -283,5 +301,38 @@ export class CompteDetailComponent implements OnInit {
     }
 
     return date.toISOString();
+  }
+
+  private loadTransferLimits(): void {
+    this.transferLimitsLoading = true;
+    this.transferLimitsError = null;
+
+    this.compteService.getMyTransferLimits().subscribe({
+      next: (limits) => {
+        this.transferLimits = limits;
+        this.transferLimitsLoading = false;
+      },
+      error: () => {
+        this.transferLimits = null;
+        this.transferLimitsError = 'Impossible de charger les plafonds de virement';
+        this.transferLimitsLoading = false;
+      }
+    });
+  }
+
+  private validateAmountAgainstLimits(amount: number): string | null {
+    if (!this.transferLimits) {
+      return null;
+    }
+
+    if (this.transferLimits.maxSingleAmount != null && amount > this.transferLimits.maxSingleAmount) {
+      return `Montant supérieur au plafond unitaire (${this.transferLimits.maxSingleAmount})`;
+    }
+
+    if (this.transferLimits.remainingDailyAmount != null && amount > this.transferLimits.remainingDailyAmount) {
+      return `Montant supérieur au restant journalier (${this.transferLimits.remainingDailyAmount})`;
+    }
+
+    return null;
   }
 }
