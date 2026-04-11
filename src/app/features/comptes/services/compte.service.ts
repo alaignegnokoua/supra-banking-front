@@ -111,6 +111,8 @@ export interface TransferRiskAssessment {
   dailyCountScore: number;
   newBeneficiary?: boolean;
   newBeneficiaryScore?: number;
+  unusualHour?: boolean;
+  unusualHourScore?: number;
 }
 
 export interface AuditRecord {
