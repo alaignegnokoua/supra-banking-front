@@ -58,5 +58,45 @@
         </li>
       </ul>
     </div>
+
+    <div class="admin-risk-card" *ngIf="isAdmin()">
+      <div class="admin-risk-header">
+        <h3>Pilotage des profils de risque client</h3>
+        <button class="btn btn-refresh" (click)="loadAdminClientsForRiskProfiles()">Rafraîchir</button>
+      </div>
+
+      <div *ngIf="adminRiskLoading" class="loading">Chargement des clients...</div>
+      <div *ngIf="adminRiskError" class="alert-error">{{ adminRiskError }}</div>
+      <div *ngIf="adminRiskSuccess" class="alert-success">{{ adminRiskSuccess }}</div>
+
+      <table *ngIf="!adminRiskLoading && adminClients.length > 0" class="admin-risk-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Email</th>
+            <th>Profil actuel</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let client of adminClients">
+            <td>{{ client.prenom }} {{ client.nom }}</td>
+            <td>{{ client.email }}</td>
+            <td>
+              <select [(ngModel)]="selectedRiskProfiles[client.id]">
+                <option *ngFor="let profile of riskProfiles" [value]="profile">{{ profile }}</option>
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-primary"
+                      [disabled]="updatingRiskForClientId === client.id"
+                      (click)="updateClientRiskProfile(client.id)">
+                {{ updatingRiskForClientId === client.id ? 'Mise à jour...' : 'Mettre à jour' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

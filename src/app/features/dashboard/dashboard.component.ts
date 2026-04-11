@@ -1,15 +1,17 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationItem, NotificationService } from '../../core/services/notification.service';
 import { Subject, interval } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
+import { AdminClient, AdminClientService, RiskProfile } from '../../core/services/admin-client.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -21,12 +23,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   notificationError: string | null = null;
   autoRefreshSeconds = 15;
 
+  adminClients: AdminClient[] = [];
+  adminRiskLoading = false;
+  adminRiskError: string | null = null;
+  adminRiskSuccess: string | null = null;
+  updatingRiskForClientId: number | null = null;
+  readonly riskProfiles: RiskProfile[] = ['SENSIBLE', 'STANDARD', 'VIP'];
+  selectedRiskProfiles: Record<number, RiskProfile> = {};
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
     private router: Router,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private adminClientService: AdminClientService
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +46,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.loadNotifications();
       });
+
+    if (this.isAdmin()) {
+      this.loadAdminClientsForRiskProfiles();
+    }
   }
 
   ngOnDestroy(): void {
@@ -94,6 +109,50 @@ export class DashboardComponent implements OnInit, OnDestroy {
       next: () => this.loadNotifications(),
       error: () => {
         this.notificationError = 'Impossible de nettoyer les notifications lues';
+      }
+    });
+  }
+
+  isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  loadAdminClientsForRiskProfiles(): void {
+    this.adminRiskError = null;
+    this.adminRiskSuccess = null;
+    this.adminRiskLoading = true;
+
+    this.adminClientService.getClients(0, 100).subscribe({
+      next: (response) => {
+        this.adminClients = response.content;
+        this.selectedRiskProfiles = {};
+        this.adminClients.forEach((client) => {
+          this.selectedRiskProfiles[client.id] = client.riskProfile ?? 'STANDARD';
+        });
+        this.adminRiskLoading = false;
+      },
+      error: () => {
+        this.adminRiskError = 'Impossible de charger les clients pour le pilotage du risque';
+        this.adminRiskLoading = false;
+      }
+    });
+  }
+
+  updateClientRiskProfile(clientId: number): void {
+    const profile = this.selectedRiskProfiles[clientId] ?? 'STANDARD';
+    this.adminRiskError = null;
+    this.adminRiskSuccess = null;
+    this.updatingRiskForClientId = clientId;
+
+    this.adminClientService.updateRiskProfile(clientId, profile).subscribe({
+      next: (updated) => {
+        this.selectedRiskProfiles[clientId] = updated.riskProfile ?? profile;
+        this.adminRiskSuccess = `Profil de risque mis à jour pour ${updated.prenom} ${updated.nom}`;
+        this.updatingRiskForClientId = null;
+      },
+      error: () => {
+        this.adminRiskError = 'Échec de la mise à jour du profil de risque';
+        this.updatingRiskForClientId = null;
       }
     });
   }
