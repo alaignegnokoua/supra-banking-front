@@ -133,6 +133,11 @@
   }
 }
 
+.auto-refresh {
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
 .badge {
   background: #fef3c7;
   color: #92400e;
@@ -169,6 +174,11 @@
     &.unread {
       border-left: 4px solid #667eea;
       background: #f8f9ff;
+    }
+
+    &.fraud-alert {
+      border-left: 4px solid #dc2626;
+      background: #fff5f5;
     }
 
     .content {

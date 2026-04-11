@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationItem, NotificationService } from '../../core/services/notification.service';
+import { Subject, interval } from 'rxjs';
+import { startWith, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,12 +13,15 @@ import { NotificationItem, NotificationService } from '../../core/services/notif
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   currentUser$ = this.authService.currentUser$;
   isAuthenticated$ = this.authService.isAuthenticated$;
   notifications: NotificationItem[] = [];
   unreadCount = 0;
   notificationError: string | null = null;
+  autoRefreshSeconds = 15;
+
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
@@ -25,8 +30,16 @@ export class DashboardComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadNotifications();
-    this.loadUnreadCount();
+    interval(this.autoRefreshSeconds * 1000)
+      .pipe(startWith(0), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadNotifications();
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadNotifications(): void {
@@ -67,6 +80,13 @@ export class DashboardComponent implements OnInit {
         this.notificationError = 'Impossible de supprimer la notification';
       }
     });
+  }
+
+  isFraudAlert(content: string): boolean {
+    if (!content) {
+      return false;
+    }
+    return content.toUpperCase().includes('ALERTE FRAUDE');
   }
 
   clearReadNotifications(): void {
