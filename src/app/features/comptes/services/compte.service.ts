@@ -101,6 +101,7 @@ export interface TransferRiskAssessment {
   blocked: boolean;
   message: string;
   operationType: 'INTERNE' | 'EXTERNE';
+  riskProfile?: 'SENSIBLE' | 'STANDARD' | 'VIP';
   blockThreshold: number;
   amountRatio: number;
   dailyAmountRatio: number;
