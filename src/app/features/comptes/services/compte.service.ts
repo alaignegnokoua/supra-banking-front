@@ -87,10 +87,12 @@ export interface TransferLimitStatus {
   maxSingleAmount: number;
   maxDailyTotal: number;
   maxDailyCount: number;
+  minIntervalSeconds: number;
   todayOutgoingTotal: number;
   remainingDailyAmount: number;
   todayOutgoingCount: number;
   remainingDailyCount: number;
+  remainingCooldownSeconds: number;
 }
 
 @Injectable({

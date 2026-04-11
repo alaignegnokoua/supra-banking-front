@@ -62,6 +62,14 @@
         <label>Virements restants aujourd'hui</label>
         <p class="amount">{{ transferLimits.remainingDailyCount }}</p>
       </div>
+      <div class="limit-item">
+        <label>Délai minimal entre virements</label>
+        <p>{{ transferLimits.minIntervalSeconds }} s</p>
+      </div>
+      <div class="limit-item">
+        <label>Temps d'attente restant</label>
+        <p class="amount">{{ transferLimits.remainingCooldownSeconds }} s</p>
+      </div>
     </div>
   </div>
 
