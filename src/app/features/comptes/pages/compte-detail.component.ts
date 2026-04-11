@@ -82,7 +82,7 @@ export class CompteDetailComponent implements OnInit {
   }
 
   loadMyComptes(): void {
-    this.compteService.getComptes(0, 100).subscribe({
+    this.compteService.getMyComptes(0, 100).subscribe({
       next: (response) => {
         const currentId = this.compte?.id;
         this.myComptes = response.content.filter(c => c.id !== currentId);

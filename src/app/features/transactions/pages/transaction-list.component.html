@@ -1,0 +1,95 @@
+<div class="transactions-page">
+  <div class="header">
+    <h2>Mes transactions</h2>
+    <a routerLink="/dashboard" class="btn btn-secondary">Retour dashboard</a>
+  </div>
+
+  <div *ngIf="loading" class="state">Chargement des comptes...</div>
+  <div *ngIf="error" class="state error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error" class="content">
+    <div class="filters-card">
+      <div class="row">
+        <label>Compte</label>
+        <select [(ngModel)]="selectedCompteId" (change)="onCompteChange()">
+          <option [ngValue]="null">-- Sélectionner --</option>
+          <option *ngFor="let compte of comptes" [ngValue]="compte.id">
+            {{ getCompteLabel(compte) }}
+          </option>
+        </select>
+      </div>
+
+      <div class="row grid-2">
+        <div>
+          <label>Type</label>
+          <select [(ngModel)]="filters.type">
+            <option value="">Tous</option>
+            <option value="depot">Dépôt</option>
+            <option value="retrait">Retrait</option>
+            <option value="virement_interne">Virement interne</option>
+            <option value="virement_externe">Virement externe</option>
+          </select>
+        </div>
+        <div>
+          <label>Montant min</label>
+          <input type="number" min="0" step="0.01" [(ngModel)]="filters.montantMin" />
+        </div>
+      </div>
+
+      <div class="row grid-2">
+        <div>
+          <label>Montant max</label>
+          <input type="number" min="0" step="0.01" [(ngModel)]="filters.montantMax" />
+        </div>
+        <div></div>
+      </div>
+
+      <div class="row grid-2">
+        <div>
+          <label>Date début</label>
+          <input type="datetime-local" [(ngModel)]="filters.dateFrom" />
+        </div>
+        <div>
+          <label>Date fin</label>
+          <input type="datetime-local" [(ngModel)]="filters.dateTo" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" (click)="applyFilters()">Filtrer</button>
+        <button class="btn btn-secondary" (click)="resetFilters()">Réinitialiser</button>
+      </div>
+    </div>
+
+    <div *ngIf="txLoading" class="state">Chargement des transactions...</div>
+
+    <table *ngIf="!txLoading && transactions.length > 0" class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Montant</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tx of transactions">
+          <td>{{ tx.dateTransaction | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ tx.type }}</td>
+          <td>{{ tx.description || '-' }}</td>
+          <td>{{ tx.montant | number:'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!txLoading && transactions.length === 0" class="state">
+      Aucune transaction trouvée.
+    </div>
+
+    <div class="pagination" *ngIf="!txLoading && totalPages > 0">
+      <button class="btn btn-secondary" [disabled]="page === 0" (click)="previousPage()">Précédent</button>
+      <span>Page {{ page + 1 }} / {{ totalPages }}</span>
+      <button class="btn btn-secondary" [disabled]="page + 1 >= totalPages" (click)="nextPage()">Suivant</button>
+    </div>
+  </div>
+</div>

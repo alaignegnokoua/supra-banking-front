@@ -97,6 +97,10 @@ export class CompteService {
     return this.http.get<PageableCompte>(`${this.API_URL}?page=${page}&size=${size}`);
   }
 
+  getMyComptes(page: number = 0, size: number = 10): Observable<PageableCompte> {
+    return this.http.get<PageableCompte>(`${this.API_URL}/me?page=${page}&size=${size}`);
+  }
+
   getCompte(id: number): Observable<Compte> {
     return this.http.get<Compte>(`${this.API_URL}/${id}`);
   }

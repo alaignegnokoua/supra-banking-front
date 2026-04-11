@@ -28,7 +28,7 @@ export class CompteListComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.compteService.getComptes(this.currentPage, this.pageSize).subscribe({
+    this.compteService.getMyComptes(this.currentPage, this.pageSize).subscribe({
       next: (data) => {
         this.comptes = data;
         this.loading = false;
