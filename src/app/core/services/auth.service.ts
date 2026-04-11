@@ -33,6 +33,8 @@ export interface CurrentUser {
   clientPrenom?: string;
   clientEmail?: string;
   clientTelephone?: string;
+  notificationsInAppEnabled?: boolean;
+  notificationsEmailEnabled?: boolean;
 }
 
 export interface UpdateProfileRequest {
@@ -45,6 +47,11 @@ export interface UpdateProfileRequest {
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
+}
+
+export interface UpdateNotificationPreferencesRequest {
+  notificationsInAppEnabled: boolean;
+  notificationsEmailEnabled: boolean;
 }
 
 @Injectable({
@@ -105,6 +112,12 @@ export class AuthService {
 
   changePassword(request: ChangePasswordRequest): Observable<void> {
     return this.http.put<void>(`${this.API_URL}/me/password`, request);
+  }
+
+  updateNotificationPreferences(request: UpdateNotificationPreferencesRequest): Observable<CurrentUser> {
+    return this.http.put<CurrentUser>(`${this.API_URL}/me/preferences`, request).pipe(
+      tap((user) => this.currentUserSubject.next(user))
+    );
   }
 
   getToken(): string | null {

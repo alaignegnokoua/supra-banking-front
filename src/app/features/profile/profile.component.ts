@@ -18,6 +18,9 @@ export class ProfileComponent implements OnInit {
   passwordLoading = false;
   passwordSuccess: string | null = null;
   passwordError: string | null = null;
+  preferencesLoading = false;
+  preferencesSuccess: string | null = null;
+  preferencesError: string | null = null;
 
   readonly form = this.fb.nonNullable.group({
     nom: ['', [Validators.required, Validators.maxLength(100)]],
@@ -30,6 +33,11 @@ export class ProfileComponent implements OnInit {
     currentPassword: ['', [Validators.required]],
     newPassword: ['', [Validators.required, Validators.minLength(6)]],
     confirmPassword: ['', [Validators.required]]
+  });
+
+  readonly preferencesForm = this.fb.nonNullable.group({
+    notificationsInAppEnabled: [true],
+    notificationsEmailEnabled: [false]
   });
 
   constructor(
@@ -48,6 +56,11 @@ export class ProfileComponent implements OnInit {
         prenom: user.clientPrenom ?? '',
         email: user.clientEmail ?? user.email ?? '',
         telephone: user.clientTelephone ?? ''
+      });
+
+      this.preferencesForm.patchValue({
+        notificationsInAppEnabled: user.notificationsInAppEnabled ?? true,
+        notificationsEmailEnabled: user.notificationsEmailEnabled ?? false
       });
     });
 
@@ -111,6 +124,28 @@ export class ProfileComponent implements OnInit {
       error: (err) => {
         this.passwordLoading = false;
         this.passwordError = err?.error?.message || 'Échec de changement du mot de passe';
+      }
+    });
+  }
+
+  submitPreferences(): void {
+    this.preferencesSuccess = null;
+    this.preferencesError = null;
+
+    this.preferencesLoading = true;
+    const value = this.preferencesForm.getRawValue();
+
+    this.authService.updateNotificationPreferences({
+      notificationsInAppEnabled: value.notificationsInAppEnabled,
+      notificationsEmailEnabled: value.notificationsEmailEnabled
+    }).subscribe({
+      next: () => {
+        this.preferencesLoading = false;
+        this.preferencesSuccess = 'Préférences de notifications mises à jour';
+      },
+      error: (err) => {
+        this.preferencesLoading = false;
+        this.preferencesError = err?.error?.message || 'Échec de mise à jour des préférences';
       }
     });
   }

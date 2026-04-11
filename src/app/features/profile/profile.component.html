@@ -72,4 +72,25 @@
       {{ passwordLoading ? 'Mise à jour...' : 'Mettre à jour le mot de passe' }}
     </button>
   </form>
+
+  <form [formGroup]="preferencesForm" (ngSubmit)="submitPreferences()" class="profile-card">
+    <h3>Préférences de notifications</h3>
+
+    <label class="checkbox-field">
+      <input type="checkbox" formControlName="notificationsInAppEnabled" />
+      <span>Recevoir les notifications dans l'application</span>
+    </label>
+
+    <label class="checkbox-field">
+      <input type="checkbox" formControlName="notificationsEmailEnabled" />
+      <span>Recevoir les notifications par email</span>
+    </label>
+
+    <div *ngIf="preferencesError" class="alert alert-error">{{ preferencesError }}</div>
+    <div *ngIf="preferencesSuccess" class="alert alert-success">{{ preferencesSuccess }}</div>
+
+    <button class="btn btn-primary" type="submit" [disabled]="preferencesLoading">
+      {{ preferencesLoading ? 'Mise à jour...' : 'Mettre à jour les préférences' }}
+    </button>
+  </form>
 </div>
