@@ -93,4 +93,37 @@
       {{ preferencesLoading ? 'Mise à jour...' : 'Mettre à jour les préférences' }}
     </button>
   </form>
+
+  <section class="profile-card">
+    <div class="audit-header">
+      <h3>Historique des opérations sensibles</h3>
+      <button class="btn btn-secondary" type="button" (click)="loadAudits()">Rafraîchir</button>
+    </div>
+
+    <div *ngIf="auditsError" class="alert alert-error">{{ auditsError }}</div>
+    <div *ngIf="auditsLoading" class="muted">Chargement...</div>
+
+    <table *ngIf="!auditsLoading && audits.length > 0" class="audit-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Opération</th>
+          <th>Statut</th>
+          <th>Message</th>
+          <th>Montant</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of audits">
+          <td>{{ a.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+          <td>{{ a.operationType }}</td>
+          <td>{{ a.status }}</td>
+          <td>{{ a.message }}</td>
+          <td>{{ a.montant != null ? (a.montant | number:'1.2-2') : '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!auditsLoading && audits.length === 0" class="muted">Aucune opération auditée pour le moment.</div>
+  </section>
 </div>

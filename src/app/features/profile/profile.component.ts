@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AuditService, OperationAuditItem } from '../../core/services/audit.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -21,6 +22,9 @@ export class ProfileComponent implements OnInit {
   preferencesLoading = false;
   preferencesSuccess: string | null = null;
   preferencesError: string | null = null;
+  audits: OperationAuditItem[] = [];
+  auditsLoading = false;
+  auditsError: string | null = null;
 
   readonly form = this.fb.nonNullable.group({
     nom: ['', [Validators.required, Validators.maxLength(100)]],
@@ -42,7 +46,8 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private auditService: AuditService
   ) {}
 
   ngOnInit(): void {
@@ -65,6 +70,7 @@ export class ProfileComponent implements OnInit {
     });
 
     this.authService.loadCurrentUser();
+    this.loadAudits();
   }
 
   submit(): void {
@@ -146,6 +152,22 @@ export class ProfileComponent implements OnInit {
       error: (err) => {
         this.preferencesLoading = false;
         this.preferencesError = err?.error?.message || 'Échec de mise à jour des préférences';
+      }
+    });
+  }
+
+  loadAudits(): void {
+    this.auditsLoading = true;
+    this.auditsError = null;
+
+    this.auditService.getMyAudits().subscribe({
+      next: (items) => {
+        this.audits = items;
+        this.auditsLoading = false;
+      },
+      error: () => {
+        this.auditsError = 'Impossible de charger l\'historique des opérations';
+        this.auditsLoading = false;
       }
     });
   }

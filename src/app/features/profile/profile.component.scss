@@ -84,4 +84,32 @@
     background: #e5e7eb;
     color: #111827;
   }
+
+  .audit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .audit-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.55rem;
+      border-bottom: 1px solid #f3f4f6;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 700;
+      background: #f8fafc;
+    }
+  }
+
+  .muted {
+    color: #6b7280;
+  }
 }
