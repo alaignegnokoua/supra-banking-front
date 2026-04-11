@@ -95,6 +95,13 @@ export interface TransferLimitStatus {
   remainingCooldownSeconds: number;
 }
 
+export interface TransferRiskAssessment {
+  score: number;
+  level: 'FAIBLE' | 'MOYEN' | 'ELEVE';
+  blocked: boolean;
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -160,6 +167,10 @@ export class CompteService {
 
   getMyTransferLimits(): Observable<TransferLimitStatus> {
     return this.http.get<TransferLimitStatus>(`${this.TRANSACTION_API_URL}/me/limits`);
+  }
+
+  getMyTransferRiskPreview(montant: number): Observable<TransferRiskAssessment> {
+    return this.http.get<TransferRiskAssessment>(`${this.TRANSACTION_API_URL}/me/risk-preview?montant=${montant}`);
   }
 
   getMyBeneficiaires(): Observable<Beneficiaire[]> {

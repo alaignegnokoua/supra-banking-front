@@ -8,7 +8,8 @@ import {
   TransactionFilters,
   Beneficiaire,
   BeneficiaireRequest,
-  TransferLimitStatus
+  TransferLimitStatus,
+  TransferRiskAssessment
 } from '../services/compte.service';
 import { FormsModule } from '@angular/forms';
 
@@ -57,6 +58,11 @@ export class CompteDetailComponent implements OnInit {
   transferLimits: TransferLimitStatus | null = null;
   transferLimitsLoading = false;
   transferLimitsError: string | null = null;
+
+  internalRisk: TransferRiskAssessment | null = null;
+  internalRiskLoading = false;
+  externalRisk: TransferRiskAssessment | null = null;
+  externalRiskLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -146,6 +152,11 @@ export class CompteDetailComponent implements OnInit {
 
     if (!this.transferDestinationId || !this.transferAmount || this.transferAmount <= 0) {
       this.transferError = 'Veuillez sélectionner un compte destination et un montant valide';
+      return;
+    }
+
+    if (this.internalRisk?.blocked) {
+      this.transferError = this.internalRisk.message;
       return;
     }
 
@@ -246,6 +257,11 @@ export class CompteDetailComponent implements OnInit {
       return;
     }
 
+    if (this.externalRisk?.blocked) {
+      this.extError = this.externalRisk.message;
+      return;
+    }
+
     const transferLimitError = this.validateAmountAgainstLimits(this.extAmount);
     if (transferLimitError) {
       this.extError = transferLimitError;
@@ -342,5 +358,47 @@ export class CompteDetailComponent implements OnInit {
     }
 
     return null;
+  }
+
+  onInternalAmountChange(): void {
+    this.transferError = null;
+    this.internalRisk = null;
+
+    if (!this.transferAmount || this.transferAmount <= 0) {
+      return;
+    }
+
+    this.internalRiskLoading = true;
+    this.compteService.getMyTransferRiskPreview(this.transferAmount).subscribe({
+      next: (risk) => {
+        this.internalRisk = risk;
+        this.internalRiskLoading = false;
+      },
+      error: () => {
+        this.internalRisk = null;
+        this.internalRiskLoading = false;
+      }
+    });
+  }
+
+  onExternalAmountChange(): void {
+    this.extError = null;
+    this.externalRisk = null;
+
+    if (!this.extAmount || this.extAmount <= 0) {
+      return;
+    }
+
+    this.externalRiskLoading = true;
+    this.compteService.getMyTransferRiskPreview(this.extAmount).subscribe({
+      next: (risk) => {
+        this.externalRisk = risk;
+        this.externalRiskLoading = false;
+      },
+      error: () => {
+        this.externalRisk = null;
+        this.externalRiskLoading = false;
+      }
+    });
   }
 }
