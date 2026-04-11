@@ -325,6 +325,10 @@ export class CompteDetailComponent implements OnInit {
       return null;
     }
 
+    if (this.transferLimits.remainingDailyCount != null && this.transferLimits.remainingDailyCount <= 0) {
+      return 'Nombre maximal de virements journaliers atteint';
+    }
+
     if (this.transferLimits.maxSingleAmount != null && amount > this.transferLimits.maxSingleAmount) {
       return `Montant supérieur au plafond unitaire (${this.transferLimits.maxSingleAmount})`;
     }

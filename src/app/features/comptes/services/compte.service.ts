@@ -86,8 +86,11 @@ export interface VirementExterneRequest {
 export interface TransferLimitStatus {
   maxSingleAmount: number;
   maxDailyTotal: number;
+  maxDailyCount: number;
   todayOutgoingTotal: number;
   remainingDailyAmount: number;
+  todayOutgoingCount: number;
+  remainingDailyCount: number;
 }
 
 @Injectable({

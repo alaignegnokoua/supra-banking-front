@@ -50,6 +50,18 @@
         <label>Reste aujourd'hui</label>
         <p class="amount">{{ transferLimits.remainingDailyAmount | number: '1.2-2' }} {{ compte.devise }}</p>
       </div>
+      <div class="limit-item">
+        <label>Nombre max de virements / jour</label>
+        <p>{{ transferLimits.maxDailyCount }}</p>
+      </div>
+      <div class="limit-item">
+        <label>Virements effectués aujourd'hui</label>
+        <p>{{ transferLimits.todayOutgoingCount }}</p>
+      </div>
+      <div class="limit-item">
+        <label>Virements restants aujourd'hui</label>
+        <p class="amount">{{ transferLimits.remainingDailyCount }}</p>
+      </div>
     </div>
   </div>
 
