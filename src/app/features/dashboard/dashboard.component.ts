@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
   currentUser$ = this.authService.currentUser$;
   isAuthenticated$ = this.authService.isAuthenticated$;
   notifications: NotificationItem[] = [];
+  unreadCount = 0;
   notificationError: string | null = null;
 
   constructor(
@@ -25,6 +26,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadNotifications();
+    this.loadUnreadCount();
   }
 
   loadNotifications(): void {
@@ -32,6 +34,7 @@ export class DashboardComponent implements OnInit {
     this.notificationService.getMyNotifications().subscribe({
       next: (items) => {
         this.notifications = items;
+        this.loadUnreadCount();
       },
       error: () => {
         this.notificationError = 'Impossible de charger les notifications';
@@ -44,6 +47,26 @@ export class DashboardComponent implements OnInit {
       next: () => this.loadNotifications(),
       error: () => {
         this.notificationError = 'Impossible de marquer la notification comme lue';
+      }
+    });
+  }
+
+  markAllAsRead(): void {
+    this.notificationService.markAllAsRead().subscribe({
+      next: () => this.loadNotifications(),
+      error: () => {
+        this.notificationError = 'Impossible de marquer toutes les notifications comme lues';
+      }
+    });
+  }
+
+  private loadUnreadCount(): void {
+    this.notificationService.getUnreadCount().subscribe({
+      next: (response) => {
+        this.unreadCount = response.unreadCount;
+      },
+      error: () => {
+        this.unreadCount = 0;
       }
     });
   }

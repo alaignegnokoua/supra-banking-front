@@ -10,6 +10,10 @@ export interface NotificationItem {
   statut: string;
 }
 
+export interface NotificationUnreadCount {
+  unreadCount: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -24,5 +28,13 @@ export class NotificationService {
 
   markAsRead(id: number): Observable<NotificationItem> {
     return this.http.patch<NotificationItem>(`${this.API_URL}/me/${id}/read`, {});
+  }
+
+  markAllAsRead(): Observable<void> {
+    return this.http.patch<void>(`${this.API_URL}/me/read-all`, {});
+  }
+
+  getUnreadCount(): Observable<NotificationUnreadCount> {
+    return this.http.get<NotificationUnreadCount>(`${this.API_URL}/me/unread-count`);
   }
 }

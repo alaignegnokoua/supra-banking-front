@@ -23,8 +23,14 @@
 
     <div class="notifications-card">
       <div class="notifications-header">
-        <h3>Mes notifications</h3>
-        <button class="btn btn-refresh" (click)="loadNotifications()">Rafraîchir</button>
+        <h3>
+          Mes notifications
+          <span class="badge" *ngIf="unreadCount > 0">{{ unreadCount }} non lue(s)</span>
+        </h3>
+        <div class="actions">
+          <button class="btn btn-refresh" (click)="loadNotifications()">Rafraîchir</button>
+          <button class="btn btn-mark-all" *ngIf="unreadCount > 0" (click)="markAllAsRead()">Tout marquer lu</button>
+        </div>
       </div>
 
       <div *ngIf="notificationError" class="alert-error">{{ notificationError }}</div>
