@@ -61,6 +61,96 @@
   </div>
 
   <div class="history-card">
+    <h2>Bénéficiaires</h2>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Nom</label>
+        <input type="text" [(ngModel)]="newBeneficiaire.nom" placeholder="Nom du bénéficiaire" />
+      </div>
+      <div class="filter-group">
+        <label>IBAN</label>
+        <input type="text" [(ngModel)]="newBeneficiaire.iban" placeholder="FR76..." />
+      </div>
+      <div class="filter-group">
+        <label>RIB</label>
+        <input type="text" [(ngModel)]="newBeneficiaire.rib" placeholder="Optionnel" />
+      </div>
+      <div class="filter-group">
+        <label>Banque</label>
+        <input type="text" [(ngModel)]="newBeneficiaire.banque" placeholder="Nom de la banque" />
+      </div>
+      <div class="filter-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="newBeneficiaire.email" placeholder="contact@..." />
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-primary" (click)="createBeneficiaire()" [disabled]="benLoading">Ajouter bénéficiaire</button>
+    </div>
+
+    <div *ngIf="benSuccess" class="alert alert-success">{{ benSuccess }}</div>
+    <div *ngIf="benError" class="alert alert-danger">{{ benError }}</div>
+
+    <table class="tx-table" *ngIf="beneficiaires.length > 0">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>IBAN/RIB</th>
+          <th>Banque</th>
+          <th>Email</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let b of beneficiaires">
+          <td>{{ b.nom }}</td>
+          <td>{{ b.iban || b.rib || '-' }}</td>
+          <td>{{ b.banque || '-' }}</td>
+          <td>{{ b.email || '-' }}</td>
+          <td>
+            <button class="btn btn-secondary" (click)="deleteBeneficiaire(b.id)">Supprimer</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="history-card">
+    <h2>Virement externe</h2>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Bénéficiaire</label>
+        <select [(ngModel)]="extBeneficiaireId">
+          <option [ngValue]="null">Sélectionner...</option>
+          <option *ngFor="let b of beneficiaires" [ngValue]="b.id">{{ b.nom }} - {{ b.iban || b.rib }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Montant</label>
+        <input type="number" min="0.01" step="0.01" [(ngModel)]="extAmount" />
+      </div>
+
+      <div class="filter-group">
+        <label>Description</label>
+        <input type="text" maxlength="200" [(ngModel)]="extDescription" placeholder="Optionnel" />
+      </div>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-primary" (click)="submitExternalTransfer()" [disabled]="extLoading">
+        {{ extLoading ? 'Traitement...' : 'Effectuer le virement externe' }}
+      </button>
+    </div>
+
+    <div *ngIf="extSuccess" class="alert alert-success">{{ extSuccess }}</div>
+    <div *ngIf="extError" class="alert alert-danger">{{ extError }}</div>
+  </div>
+
+  <div class="history-card">
     <h2>Historique des transactions</h2>
 
     <div class="filters">

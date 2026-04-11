@@ -59,12 +59,37 @@ export interface VirementInterneRequest {
   description?: string;
 }
 
+export interface Beneficiaire {
+  id: number;
+  nom: string;
+  iban?: string;
+  rib?: string;
+  banque?: string;
+  email?: string;
+}
+
+export interface BeneficiaireRequest {
+  nom: string;
+  iban?: string;
+  rib?: string;
+  banque?: string;
+  email?: string;
+}
+
+export interface VirementExterneRequest {
+  compteSourceId: number;
+  beneficiaireId: number;
+  montant: number;
+  description?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class CompteService {
   private readonly API_URL = `${environment.apiUrl}/api/comptes`;
   private readonly TRANSACTION_API_URL = `${environment.apiUrl}/api/transactions`;
+  private readonly BENEFICIAIRE_API_URL = `${environment.apiUrl}/api/beneficiaires`;
 
   constructor(private http: HttpClient) {}
 
@@ -111,5 +136,21 @@ export class CompteService {
 
   effectuerVirementInterne(request: VirementInterneRequest): Observable<void> {
     return this.http.post<void>(`${this.TRANSACTION_API_URL}/me/virement-interne`, request);
+  }
+
+  effectuerVirementExterne(request: VirementExterneRequest): Observable<void> {
+    return this.http.post<void>(`${this.TRANSACTION_API_URL}/me/virement-externe`, request);
+  }
+
+  getMyBeneficiaires(): Observable<Beneficiaire[]> {
+    return this.http.get<Beneficiaire[]>(`${this.BENEFICIAIRE_API_URL}/me`);
+  }
+
+  createMyBeneficiaire(request: BeneficiaireRequest): Observable<Beneficiaire> {
+    return this.http.post<Beneficiaire>(`${this.BENEFICIAIRE_API_URL}/me`, request);
+  }
+
+  deleteMyBeneficiaire(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.BENEFICIAIRE_API_URL}/me/${id}`);
   }
 }
