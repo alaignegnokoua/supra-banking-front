@@ -107,6 +107,12 @@
     <div *ngIf="internalRiskLoading" class="loading">Évaluation du risque...</div>
     <div *ngIf="internalRisk" class="alert" [ngClass]="internalRisk.blocked ? 'alert-danger' : 'alert-success'">
       Risque {{ internalRisk.level.toLowerCase() }} (score {{ internalRisk.score }})
+      <div>{{ internalRisk.message }} (seuil blocage: {{ internalRisk.blockThreshold }})</div>
+      <ul>
+        <li>Montant: {{ internalRisk.amountScore }} pts (ratio {{ internalRisk.amountRatio | number: '1.2-2' }})</li>
+        <li>Cumul journalier: {{ internalRisk.dailyAmountScore }} pts (ratio {{ internalRisk.dailyAmountRatio | number: '1.2-2' }})</li>
+        <li>Fréquence: {{ internalRisk.dailyCountScore }} pts (ratio {{ internalRisk.dailyCountRatio | number: '1.2-2' }})</li>
+      </ul>
     </div>
   </div>
 
@@ -201,6 +207,12 @@
     <div *ngIf="externalRiskLoading" class="loading">Évaluation du risque...</div>
     <div *ngIf="externalRisk" class="alert" [ngClass]="externalRisk.blocked ? 'alert-danger' : 'alert-success'">
       Risque {{ externalRisk.level.toLowerCase() }} (score {{ externalRisk.score }})
+      <div>{{ externalRisk.message }} (seuil blocage: {{ externalRisk.blockThreshold }})</div>
+      <ul>
+        <li>Montant: {{ externalRisk.amountScore }} pts (ratio {{ externalRisk.amountRatio | number: '1.2-2' }})</li>
+        <li>Cumul journalier: {{ externalRisk.dailyAmountScore }} pts (ratio {{ externalRisk.dailyAmountRatio | number: '1.2-2' }})</li>
+        <li>Fréquence: {{ externalRisk.dailyCountScore }} pts (ratio {{ externalRisk.dailyCountRatio | number: '1.2-2' }})</li>
+      </ul>
     </div>
   </div>
 

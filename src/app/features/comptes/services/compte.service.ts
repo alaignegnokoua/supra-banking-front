@@ -100,6 +100,14 @@ export interface TransferRiskAssessment {
   level: 'FAIBLE' | 'MOYEN' | 'ELEVE';
   blocked: boolean;
   message: string;
+  operationType: 'INTERNE' | 'EXTERNE';
+  blockThreshold: number;
+  amountRatio: number;
+  dailyAmountRatio: number;
+  dailyCountRatio: number;
+  amountScore: number;
+  dailyAmountScore: number;
+  dailyCountScore: number;
 }
 
 @Injectable({
