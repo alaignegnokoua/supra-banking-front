@@ -113,6 +113,10 @@ export interface TransferRiskAssessment {
   newBeneficiaryScore?: number;
   unusualHour?: boolean;
   unusualHourScore?: number;
+  multiBeneficiaryVelocity?: boolean;
+  multiBeneficiaryVelocityScore?: number;
+  distinctBeneficiariesWindow?: number;
+  externalTransfersWindow?: number;
 }
 
 export interface AuditRecord {
