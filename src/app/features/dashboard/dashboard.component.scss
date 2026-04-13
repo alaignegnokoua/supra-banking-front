@@ -275,3 +275,15 @@
 .loading {
   color: #555;
 }
+
+.admin-statistics-card{background:#fff;border-radius:8px;padding:1rem;box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.admin-statistics-card .statistics-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #eee}
+.admin-statistics-card .statistics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.8rem}
+.admin-statistics-card .stat-category{background:#f9f9f9;border-radius:6px;padding:.7rem;border-left:3px solid #667eea}
+.admin-statistics-card .stat-category.fraud{border-left-color:#ef4444}
+.admin-statistics-card .stat-category h4{margin:0 0 .5rem 0;font-size:.8rem;color:#666}
+.admin-statistics-card .stat-item{display:flex;justify-content:space-between;margin-bottom:.35rem;font-size:.85rem}
+.admin-statistics-card .stat-label{color:#666}
+.admin-statistics-card .stat-value{font-weight:700;color:#333}
+.admin-statistics-card .stat-value.alert{color:#ef4444}
+.admin-statistics-card .stat-value.healthy{color:#10b981}

@@ -97,6 +97,96 @@
           </tr>
         </tbody>
       </table>
+
+      <div class="admin-statistics-card" *ngIf="isAdmin()">
+        <div class="statistics-header">
+          <h3>Tableau de bord des statistiques</h3>
+          <button class="btn btn-refresh" (click)="loadDashboardStatistics()">Rafraîchir</button>
+        </div>
+
+        <div *ngIf="dashboardLoading" class="loading">Chargement des statistiques...</div>
+        <div *ngIf="dashboardError" class="alert-error">{{ dashboardError }}</div>
+
+        <div *ngIf="!dashboardLoading && dashboardStats" class="statistics-grid">
+          <!-- Clients Section -->
+          <div class="stat-category">
+            <h4>Clients</h4>
+            <div class="stat-item">
+              <span class="stat-label">Total de clients</span>
+              <span class="stat-value">{{ dashboardStats.totalClients | number }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Clients actifs aujourd'hui</span>
+              <span class="stat-value">{{ dashboardStats.activeClientsToday | number }}</span>
+            </div>
+          </div>
+
+          <!-- Transferts Section -->
+          <div class="stat-category">
+            <h4>Transferts</h4>
+            <div class="stat-item">
+              <span class="stat-label">Transferts aujourd'hui</span>
+              <span class="stat-value">{{ dashboardStats.transfersToday | number }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Transferts internes</span>
+              <span class="stat-value">{{ dashboardStats.internalTransfers | number }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Transferts externes</span>
+              <span class="stat-value">{{ dashboardStats.externalTransfers | number }}</span>
+            </div>
+          </div>
+
+          <!-- Fraude Section -->
+          <div class="stat-category fraud">
+            <h4>Fraude</h4>
+            <div class="stat-item">
+              <span class="stat-label">Transferts bloqués aujourd'hui</span>
+              <span class="stat-value" [class.alert]="dashboardStats.blockedTransfersToday > 0">
+                {{ dashboardStats.blockedTransfersToday | number }}
+              </span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Taux de blocage</span>
+              <span class="stat-value">{{ dashboardStats.blockageRate | number: '1.2-2' }}%</span>
+            </div>
+          </div>
+
+          <!-- Risque Section -->
+          <div class="stat-category">
+            <h4>Profils de risque</h4>
+            <div class="stat-item">
+              <span class="stat-label">Risque FAIBLE</span>
+              <span class="stat-value">{{ dashboardStats.riskLevelFaible | number }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Risque MOYEN</span>
+              <span class="stat-value">{{ dashboardStats.riskLevelMoyen | number }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Risque ELEVE</span>
+              <span class="stat-value" [class.alert]="dashboardStats.riskLevelEleve > 0">
+                {{ dashboardStats.riskLevelEleve | number }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Montants Section -->
+          <div class="stat-category">
+            <h4>Montants</h4>
+            <div class="stat-item">
+              <span class="stat-label">Montant moyen par transaction</span>
+              <span class="stat-value">{{ dashboardStats.averageTransactionAmount | number: '1.2-2' }} XOF</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Montant total</span>
+              <span class="stat-value">{{ dashboardStats.totalTransactionAmount | number: '1.2-2' }} XOF</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

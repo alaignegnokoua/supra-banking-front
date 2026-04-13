@@ -7,6 +7,7 @@ import { NotificationItem, NotificationService } from '../../core/services/notif
 import { Subject, interval } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
 import { AdminClient, AdminClientService, RiskProfile } from '../../core/services/admin-client.service';
+import { DashboardService, DashboardStatistics } from '../../core/services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -31,6 +32,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   readonly riskProfiles: RiskProfile[] = ['SENSIBLE', 'STANDARD', 'VIP'];
   selectedRiskProfiles: Record<number, RiskProfile> = {};
 
+  // Dashboard statistics
+  dashboardStats: DashboardStatistics | null = null;
+  dashboardLoading = false;
+  dashboardError: string | null = null;
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -38,6 +44,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private router: Router,
     private notificationService: NotificationService,
     private adminClientService: AdminClientService
+      ,
+    private dashboardService: DashboardService
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +56,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
 
     if (this.isAdmin()) {
+      this.loadDashboardStatistics();
       this.loadAdminClientsForRiskProfiles();
     }
   }
@@ -171,5 +180,21 @@ export class DashboardComponent implements OnInit, OnDestroy {
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/auth/login']);
+  }
+
+  loadDashboardStatistics(): void {
+    this.dashboardError = null;
+    this.dashboardLoading = true;
+    
+    this.dashboardService.getDashboardStatistics().subscribe({
+      next: (stats) => {
+        this.dashboardStats = stats;
+        this.dashboardLoading = false;
+      },
+      error: () => {
+        this.dashboardError = 'Impossible de charger les statistiques du tableau de bord';
+        this.dashboardLoading = false;
+      }
+    });
   }
 }
