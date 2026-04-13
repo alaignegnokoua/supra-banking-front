@@ -66,6 +66,30 @@ export interface Beneficiaire {
   rib?: string;
   banque?: string;
   email?: string;
+  createdAt?: string;
+  lastUsedAt?: string;
+  status?: string;
+  successfulTransfersCount?: number;
+}
+
+export interface BeneficiaryUsageHistory {
+  id: number;
+  beneficiaireId: number;
+  beneficiaireName: string;
+  transactionId: number;
+  montant: number;
+  typeOperation: string;
+  status: string;
+  usedAt: string;
+  createdAt: string;
+}
+
+export interface PageableBeneficiaryUsageHistory {
+  content: BeneficiaryUsageHistory[];
+  totalElements: number;
+  totalPages: number;
+  number: number;
+  size: number;
 }
 
 export interface BeneficiaireRequest {
@@ -123,6 +147,9 @@ export interface TransferRiskAssessment {
   repeatedSmallTransfers?: boolean;
   repeatedSmallTransfersScore?: number;
   smallTransfersWindowCount?: number;
+  repeatedBeneficiaryTransfers?: boolean;
+  repeatedBeneficiaryTransfersScore?: number;
+  beneficiaryTransfersWindowCount?: number;
 }
 
 export interface AuditRecord {
@@ -242,5 +269,32 @@ export class CompteService {
 
   deleteMyBeneficiaire(id: number): Observable<void> {
     return this.http.delete<void>(`${this.BENEFICIAIRE_API_URL}/me/${id}`);
+  }
+
+  getMyBeneficiaryUsageHistory(page: number = 0, size: number = 10): Observable<PageableBeneficiaryUsageHistory> {
+    return this.http.get<PageableBeneficiaryUsageHistory>(
+      `${this.BENEFICIAIRE_API_URL}/me/usage-history?page=${page}&size=${size}`
+    );
+  }
+
+  getMyBeneficiaryUsageHistoryByBeneficiary(
+    beneficiaireId: number,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PageableBeneficiaryUsageHistory> {
+    return this.http.get<PageableBeneficiaryUsageHistory>(
+      `${this.BENEFICIAIRE_API_URL}/me/${beneficiaireId}/usage-history?page=${page}&size=${size}`
+    );
+  }
+
+  getMyBeneficiaryUsageHistoryByDateRange(
+    startDate: string,
+    endDate: string,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PageableBeneficiaryUsageHistory> {
+    return this.http.get<PageableBeneficiaryUsageHistory>(
+      `${this.BENEFICIAIRE_API_URL}/me/usage-history/by-date?startDate=${startDate}&endDate=${endDate}&page=${page}&size=${size}`
+    );
   }
 }

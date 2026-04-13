@@ -343,6 +343,68 @@
       </div>
     </div>
   </div>
+
+  <!-- Beneficiary Usage History Section -->
+  <div class="history-card">
+    <h2>Historique d'utilisation des bénéficiaires</h2>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label>Filtrer par bénéficiaire:</label>
+        <select [(ngModel)]="selectedBeneficiaryForHistory" (change)="onBeneficiarySelected()" class="form-control">
+          <option [value]="null">Tous les bénéficiaires</option>
+          <option *ngFor="let ben of beneficiaires" [value]="ben.id">
+            {{ ben.nom }} - Utilisations: {{ ben.successfulTransfersCount || 0 }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>ou Filtrer par plage de dates:</label>
+        <div class="date-range">
+          <input type="datetime-local" [(ngModel)]="usageHistoryStartDate" placeholder="Début" class="form-control">
+          <input type="datetime-local" [(ngModel)]="usageHistoryEndDate" placeholder="Fin" class="form-control">
+          <button class="btn btn-primary" (click)="onDateRangeSelected()">Filtrer</button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="usageHistoryLoading" class="loading">Chargement de l'historique...</div>
+    <div *ngIf="usageHistoryError" class="alert alert-danger">{{ usageHistoryError }}</div>
+
+    <div *ngIf="!usageHistoryLoading && beneficiaryUsageHistory.length > 0">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Bénéficiaire</th>
+            <th>Montant</th>
+            <th>Type Opération</th>
+            <th>Statut</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let history of beneficiaryUsageHistory">
+            <td>{{ history.beneficiaireName }}</td>
+            <td class="amount">{{ history.montant | number: '1.2-2' }}</td>
+            <td>{{ history.typeOperation }}</td>
+            <td [ngClass]="'status-' + history.status.toLowerCase()">{{ history.status }}</td>
+            <td>{{ history.usedAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination" *ngIf="usageTotalPages > 1">
+        <button class="btn btn-secondary" (click)="previousUsageHistoryPage()" [disabled]="usagePage === 0">Précédent</button>
+        <span>Page {{ usagePage + 1 }} / {{ usageTotalPages }}</span>
+        <button class="btn btn-secondary" (click)="nextUsageHistoryPage()" [disabled]="usagePage + 1 >= usageTotalPages">Suivant</button>
+      </div>
+    </div>
+
+    <ng-template #noUsageHistory>
+      <p class="empty">Aucun historique d'utilisation trouvé.</p>
+    </ng-template>
+  </div>
 </div>
 
 <div *ngIf="loading" class="container">

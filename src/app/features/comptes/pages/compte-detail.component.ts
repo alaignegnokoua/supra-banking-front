@@ -8,6 +8,8 @@ import {
   TransactionFilters,
   Beneficiaire,
   BeneficiaireRequest,
+  BeneficiaryUsageHistory,
+  PageableBeneficiaryUsageHistory,
   TransferLimitStatus,
   TransferRiskAssessment,
   AuditRecord
@@ -72,6 +74,17 @@ export class CompteDetailComponent implements OnInit {
   auditSize = 10;
   auditTotalPages = 0;
 
+  beneficiaryUsageHistory: BeneficiaryUsageHistory[] = [];
+  usageHistoryLoading = false;
+  usageHistoryError: string | null = null;
+  usagePage = 0;
+  usageSize = 10;
+  usageTotalPages = 0;
+  selectedBeneficiaryForHistory: number | null = null;
+
+  usageHistoryStartDate = '';
+  usageHistoryEndDate = '';
+
   constructor(
     private route: ActivatedRoute,
     private compteService: CompteService
@@ -94,6 +107,7 @@ export class CompteDetailComponent implements OnInit {
         this.loadTransactions();
         this.loadTransferLimits();
         this.loadAuditHistory();
+        this.loadBeneficiaryUsageHistory();
       },
       error: (err) => {
         this.error = 'Compte non trouvé';
@@ -438,6 +452,87 @@ export class CompteDetailComponent implements OnInit {
     if (this.auditPage > 0) {
       this.auditPage--;
       this.loadAuditHistory();
+    }
+  }
+
+  loadBeneficiaryUsageHistory(page: number = 0): void {
+    this.usageHistoryLoading = true;
+    this.usageHistoryError = null;
+    this.usagePage = page;
+
+    if (this.selectedBeneficiaryForHistory) {
+      // Load history for specific beneficiary
+      this.compteService.getMyBeneficiaryUsageHistoryByBeneficiary(
+        this.selectedBeneficiaryForHistory,
+        page,
+        this.usageSize
+      ).subscribe({
+        next: (response) => {
+          this.beneficiaryUsageHistory = response.content;
+          this.usageTotalPages = response.totalPages;
+          this.usageHistoryLoading = false;
+        },
+        error: (err) => {
+          this.usageHistoryError = 'Erreur lors du chargement de l\'historique d\'utilisation';
+          this.usageHistoryLoading = false;
+        }
+      });
+    } else if (this.usageHistoryStartDate && this.usageHistoryEndDate) {
+      // Load history by date range
+      this.compteService.getMyBeneficiaryUsageHistoryByDateRange(
+        this.usageHistoryStartDate,
+        this.usageHistoryEndDate,
+        page,
+        this.usageSize
+      ).subscribe({
+        next: (response) => {
+          this.beneficiaryUsageHistory = response.content;
+          this.usageTotalPages = response.totalPages;
+          this.usageHistoryLoading = false;
+        },
+        error: (err) => {
+          this.usageHistoryError = 'Erreur lors du chargement de l\'historique d\'utilisation';
+          this.usageHistoryLoading = false;
+        }
+      });
+    } else {
+      // Load all usage history
+      this.compteService.getMyBeneficiaryUsageHistory(page, this.usageSize).subscribe({
+        next: (response) => {
+          this.beneficiaryUsageHistory = response.content;
+          this.usageTotalPages = response.totalPages;
+          this.usageHistoryLoading = false;
+        },
+        error: (err) => {
+          this.usageHistoryError = 'Erreur lors du chargement de l\'historique d\'utilisation';
+          this.usageHistoryLoading = false;
+        }
+      });
+    }
+  }
+
+  onBeneficiarySelected(): void {
+    this.usagePage = 0;
+    this.usageHistoryStartDate = '';
+    this.usageHistoryEndDate = '';
+    this.loadBeneficiaryUsageHistory(0);
+  }
+
+  onDateRangeSelected(): void {
+    this.usagePage = 0;
+    this.selectedBeneficiaryForHistory = null;
+    this.loadBeneficiaryUsageHistory(0);
+  }
+
+  nextUsageHistoryPage(): void {
+    if (this.usagePage + 1 < this.usageTotalPages) {
+      this.loadBeneficiaryUsageHistory(this.usagePage + 1);
+    }
+  }
+
+  previousUsageHistoryPage(): void {
+    if (this.usagePage > 0) {
+      this.loadBeneficiaryUsageHistory(this.usagePage - 1);
     }
   }
 }
