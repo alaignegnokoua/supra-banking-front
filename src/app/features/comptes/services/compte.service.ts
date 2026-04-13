@@ -120,6 +120,9 @@ export interface TransferRiskAssessment {
   unusualAmount?: boolean;
   unusualAmountScore?: number;
   historicalAverageAmount?: number;
+  repeatedSmallTransfers?: boolean;
+  repeatedSmallTransfersScore?: number;
+  smallTransfersWindowCount?: number;
 }
 
 export interface AuditRecord {
