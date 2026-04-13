@@ -75,6 +75,10 @@
             <th>Client</th>
             <th>Email</th>
             <th>Profil actuel</th>
+            <th>Plafond unitaire</th>
+            <th>Plafond journalier</th>
+            <th>Nb max/jour</th>
+            <th>Intervalle min (s)</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -88,10 +92,27 @@
               </select>
             </td>
             <td>
+              <input type="number" min="0" [(ngModel)]="selectedTransferLimits[client.id].maxSingleTransferAmount" />
+            </td>
+            <td>
+              <input type="number" min="0" [(ngModel)]="selectedTransferLimits[client.id].maxDailyTransferTotal" />
+            </td>
+            <td>
+              <input type="number" min="0" [(ngModel)]="selectedTransferLimits[client.id].maxDailyTransferCount" />
+            </td>
+            <td>
+              <input type="number" min="0" [(ngModel)]="selectedTransferLimits[client.id].minTransferIntervalSeconds" />
+            </td>
+            <td>
               <button class="btn btn-primary"
                       [disabled]="updatingRiskForClientId === client.id"
                       (click)="updateClientRiskProfile(client.id)">
                 {{ updatingRiskForClientId === client.id ? 'Mise à jour...' : 'Mettre à jour' }}
+              </button>
+              <button class="btn btn-secondary"
+                      [disabled]="updatingLimitsForClientId === client.id"
+                      (click)="updateClientTransferLimits(client.id)">
+                {{ updatingLimitsForClientId === client.id ? 'Mise à jour...' : 'Plafonds' }}
               </button>
             </td>
           </tr>

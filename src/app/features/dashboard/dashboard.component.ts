@@ -6,7 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { NotificationItem, NotificationService } from '../../core/services/notification.service';
 import { Subject, interval } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
-import { AdminClient, AdminClientService, RiskProfile } from '../../core/services/admin-client.service';
+import { AdminClient, AdminClientService, RiskProfile, UpdateTransferLimitsRequest } from '../../core/services/admin-client.service';
 import { DashboardService, DashboardStatistics, MonthlyReport } from '../../core/services/dashboard.service';
 
 @Component({
@@ -29,8 +29,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
   adminRiskError: string | null = null;
   adminRiskSuccess: string | null = null;
   updatingRiskForClientId: number | null = null;
+  updatingLimitsForClientId: number | null = null;
   readonly riskProfiles: RiskProfile[] = ['SENSIBLE', 'STANDARD', 'VIP'];
   selectedRiskProfiles: Record<number, RiskProfile> = {};
+  selectedTransferLimits: Record<number, UpdateTransferLimitsRequest> = {};
 
   // Dashboard statistics
   dashboardStats: DashboardStatistics | null = null;
@@ -147,8 +149,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.adminClients = response.content;
         this.selectedRiskProfiles = {};
+        this.selectedTransferLimits = {};
         this.adminClients.forEach((client) => {
           this.selectedRiskProfiles[client.id] = client.riskProfile ?? 'STANDARD';
+          this.selectedTransferLimits[client.id] = {
+            maxSingleTransferAmount: client.customMaxSingleTransferAmount ?? null,
+            maxDailyTransferTotal: client.customMaxDailyTransferTotal ?? null,
+            maxDailyTransferCount: client.customMaxDailyTransferCount ?? null,
+            minTransferIntervalSeconds: client.customMinTransferIntervalSeconds ?? null
+          };
         });
         this.adminRiskLoading = false;
       },
@@ -174,6 +183,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
       error: () => {
         this.adminRiskError = 'Échec de la mise à jour du profil de risque';
         this.updatingRiskForClientId = null;
+      }
+    });
+  }
+
+  updateClientTransferLimits(clientId: number): void {
+    const payload = this.selectedTransferLimits[clientId];
+    if (!payload) {
+      return;
+    }
+
+    this.adminRiskError = null;
+    this.adminRiskSuccess = null;
+    this.updatingLimitsForClientId = clientId;
+
+    this.adminClientService.updateTransferLimits(clientId, payload).subscribe({
+      next: (updated) => {
+        this.selectedTransferLimits[clientId] = {
+          maxSingleTransferAmount: updated.customMaxSingleTransferAmount ?? null,
+          maxDailyTransferTotal: updated.customMaxDailyTransferTotal ?? null,
+          maxDailyTransferCount: updated.customMaxDailyTransferCount ?? null,
+          minTransferIntervalSeconds: updated.customMinTransferIntervalSeconds ?? null
+        };
+        this.adminRiskSuccess = `Plafonds personnalisés mis à jour pour ${updated.prenom} ${updated.nom}`;
+        this.updatingLimitsForClientId = null;
+      },
+      error: (err) => {
+        this.adminRiskError = err?.error?.message || 'Échec de la mise à jour des plafonds personnalisés';
+        this.updatingLimitsForClientId = null;
       }
     });
   }

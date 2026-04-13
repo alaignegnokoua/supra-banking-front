@@ -13,6 +13,17 @@ export interface AdminClient {
   telephone: string;
   identifiant: string;
   riskProfile?: RiskProfile;
+  customMaxSingleTransferAmount?: number;
+  customMaxDailyTransferTotal?: number;
+  customMaxDailyTransferCount?: number;
+  customMinTransferIntervalSeconds?: number;
+}
+
+export interface UpdateTransferLimitsRequest {
+  maxSingleTransferAmount: number | null;
+  maxDailyTransferTotal: number | null;
+  maxDailyTransferCount: number | null;
+  minTransferIntervalSeconds: number | null;
 }
 
 export interface PageableAdminClient {
@@ -37,5 +48,9 @@ export class AdminClientService {
 
   updateRiskProfile(clientId: number, riskProfile: RiskProfile): Observable<AdminClient> {
     return this.http.patch<AdminClient>(`${this.API_URL}/${clientId}/risk-profile`, { riskProfile });
+  }
+
+  updateTransferLimits(clientId: number, request: UpdateTransferLimitsRequest): Observable<AdminClient> {
+    return this.http.patch<AdminClient>(`${this.API_URL}/${clientId}/transfer-limits`, request);
   }
 }
