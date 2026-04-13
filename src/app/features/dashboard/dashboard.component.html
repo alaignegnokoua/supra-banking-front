@@ -245,5 +245,95 @@
       </div>
 
     </div>
+
+    <div class="admin-risk-card">
+      <div class="admin-risk-header">
+        <h3>Orchestration RPA</h3>
+        <div class="actions">
+          <button class="btn btn-refresh" (click)="loadMyRpaTasks()">Rafraîchir mes tâches</button>
+          <button class="btn btn-refresh" *ngIf="canManageRpaQueue()" (click)="loadPendingRpaTasks()">Rafraîchir file</button>
+          <button class="btn btn-primary" *ngIf="canManageRpaQueue()" (click)="executePendingRpaTasks()">Exécuter file</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <div class="filter-group">
+          <label>Nom de la tâche</label>
+          <input type="text" [(ngModel)]="newRpaTask.nomTache" placeholder="Ex: Analyse journalière" />
+        </div>
+        <div class="filter-group">
+          <label>Type</label>
+          <select [(ngModel)]="newRpaTask.type">
+            <option value="ANALYSE_FRAUDE">ANALYSE_FRAUDE</option>
+            <option value="RAPPROCHEMENT_COMPTES">RAPPROCHEMENT_COMPTES</option>
+            <option value="EXPORT_AUDIT">EXPORT_AUDIT</option>
+            <option value="NOTIFICATION_LOT">NOTIFICATION_LOT</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Payload (optionnel)</label>
+          <input type="text" [(ngModel)]="newRpaTask.payload" placeholder='{"scope":"daily"}' />
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-primary" (click)="createRpaTask()">Créer la tâche</button>
+      </div>
+
+      <div *ngIf="rpaError" class="alert-error">{{ rpaError }}</div>
+      <div *ngIf="rpaSuccess" class="alert-success">{{ rpaSuccess }}</div>
+      <div *ngIf="rpaLoading" class="loading">Chargement des tâches RPA...</div>
+
+      <table class="admin-risk-table" *ngIf="rpaTasks.length > 0">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Statut</th>
+            <th>Résultat</th>
+            <th>Créée le</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of rpaTasks">
+            <td>{{ task.nomTache }}</td>
+            <td>{{ task.type }}</td>
+            <td>{{ task.statut }}</td>
+            <td>{{ task.resultMessage || task.lastError || '-' }}</td>
+            <td>{{ task.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              <button class="btn btn-secondary" *ngIf="task.statut === 'EN_ATTENTE'" (click)="cancelRpaTask(task.id)">Annuler</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="canManageRpaQueue() && pendingRpaTasks.length > 0" style="margin-top: 1rem;">
+        <h4>File RPA en attente (admin/agent)</h4>
+        <table class="admin-risk-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Utilisateur</th>
+              <th>Nom</th>
+              <th>Type</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let task of pendingRpaTasks">
+              <td>{{ task.id }}</td>
+              <td>{{ task.username || '-' }}</td>
+              <td>{{ task.nomTache }}</td>
+              <td>{{ task.type }}</td>
+              <td>
+                <button class="btn btn-primary" (click)="executeRpaTaskNow(task.id)">Exécuter</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>

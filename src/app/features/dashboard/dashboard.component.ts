@@ -8,6 +8,7 @@ import { Subject, interval } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
 import { AdminClient, AdminClientService, RiskProfile, UpdateTransferLimitsRequest } from '../../core/services/admin-client.service';
 import { DashboardService, DashboardStatistics, MonthlyReport } from '../../core/services/dashboard.service';
+import { CreateRpaTaskRequest, RpaTask, RpaTaskService } from '../../core/services/rpa-task.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -44,6 +45,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
   monthlyReportError: string | null = null;
   selectedReportMonth = this.getCurrentMonthInput();
 
+  rpaTasks: RpaTask[] = [];
+  pendingRpaTasks: RpaTask[] = [];
+  rpaLoading = false;
+  rpaError: string | null = null;
+  rpaSuccess: string | null = null;
+  newRpaTask: CreateRpaTaskRequest = {
+    nomTache: '',
+    type: 'ANALYSE_FRAUDE',
+    payload: ''
+  };
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -52,7 +64,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private adminClientService: AdminClientService
       ,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private rpaTaskService: RpaTaskService
   ) {}
 
   private getCurrentMonthInput(): string {
@@ -72,6 +85,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.loadDashboardStatistics();
       this.loadAdminClientsForRiskProfiles();
       this.loadMonthlyReport();
+    }
+
+    this.loadMyRpaTasks();
+    if (this.canManageRpaQueue()) {
+      this.loadPendingRpaTasks();
     }
   }
 
@@ -138,6 +156,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isAdmin(): boolean {
     return this.authService.isAdmin();
+  }
+
+  canManageRpaQueue(): boolean {
+    return this.authService.isAdmin() || this.authService.isAgent();
   }
 
   loadAdminClientsForRiskProfiles(): void {
@@ -313,5 +335,106 @@ export class DashboardComponent implements OnInit, OnDestroy {
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
+  }
+
+  loadMyRpaTasks(): void {
+    this.rpaLoading = true;
+    this.rpaError = null;
+
+    this.rpaTaskService.getMyTasks().subscribe({
+      next: (tasks) => {
+        this.rpaTasks = tasks;
+        this.rpaLoading = false;
+      },
+      error: () => {
+        this.rpaError = 'Impossible de charger vos tâches RPA';
+        this.rpaLoading = false;
+      }
+    });
+  }
+
+  loadPendingRpaTasks(): void {
+    if (!this.canManageRpaQueue()) {
+      this.pendingRpaTasks = [];
+      return;
+    }
+
+    this.rpaTaskService.getPendingTasks().subscribe({
+      next: (tasks) => this.pendingRpaTasks = tasks,
+      error: () => this.pendingRpaTasks = []
+    });
+  }
+
+  createRpaTask(): void {
+    this.rpaError = null;
+    this.rpaSuccess = null;
+
+    if (!this.newRpaTask.nomTache?.trim()) {
+      this.rpaError = 'Le nom de la tâche est obligatoire';
+      return;
+    }
+
+    this.rpaTaskService.createMyTask({
+      nomTache: this.newRpaTask.nomTache.trim(),
+      type: (this.newRpaTask.type || 'ANALYSE_FRAUDE').trim().toUpperCase(),
+      payload: this.newRpaTask.payload?.trim() || undefined
+    }).subscribe({
+      next: () => {
+        this.rpaSuccess = 'Tâche RPA créée';
+        this.newRpaTask = { nomTache: '', type: 'ANALYSE_FRAUDE', payload: '' };
+        this.loadMyRpaTasks();
+        this.loadPendingRpaTasks();
+      },
+      error: (err) => {
+        this.rpaError = err?.error?.message || 'Échec de création de la tâche RPA';
+      }
+    });
+  }
+
+  cancelRpaTask(taskId: number): void {
+    this.rpaTaskService.cancelMyTask(taskId).subscribe({
+      next: () => {
+        this.rpaSuccess = 'Tâche RPA annulée';
+        this.loadMyRpaTasks();
+        this.loadPendingRpaTasks();
+      },
+      error: (err) => {
+        this.rpaError = err?.error?.message || 'Échec de l\'annulation de la tâche RPA';
+      }
+    });
+  }
+
+  executePendingRpaTasks(): void {
+    if (!this.canManageRpaQueue()) {
+      return;
+    }
+
+    this.rpaTaskService.executePendingTasksBatch().subscribe({
+      next: (count) => {
+        this.rpaSuccess = `${count} tâche(s) RPA exécutée(s)`;
+        this.loadMyRpaTasks();
+        this.loadPendingRpaTasks();
+      },
+      error: (err) => {
+        this.rpaError = err?.error?.message || 'Échec de l\'exécution du lot RPA';
+      }
+    });
+  }
+
+  executeRpaTaskNow(taskId: number): void {
+    if (!this.canManageRpaQueue()) {
+      return;
+    }
+
+    this.rpaTaskService.executeTaskNow(taskId).subscribe({
+      next: () => {
+        this.rpaSuccess = 'Tâche RPA exécutée';
+        this.loadMyRpaTasks();
+        this.loadPendingRpaTasks();
+      },
+      error: (err) => {
+        this.rpaError = err?.error?.message || 'Échec de l\'exécution de la tâche RPA';
+      }
+    });
   }
 }
