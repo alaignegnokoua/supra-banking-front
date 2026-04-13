@@ -38,6 +38,9 @@ export interface CurrentUser {
   clientTelephone?: string;
   notificationsInAppEnabled?: boolean;
   notificationsEmailEnabled?: boolean;
+  notificationsSmsEnabled?: boolean;
+  notificationsTelegramEnabled?: boolean;
+  telegramChatId?: string;
   mfaEnabled?: boolean;
 }
 
@@ -56,6 +59,9 @@ export interface ChangePasswordRequest {
 export interface UpdateNotificationPreferencesRequest {
   notificationsInAppEnabled: boolean;
   notificationsEmailEnabled: boolean;
+  notificationsSmsEnabled: boolean;
+  notificationsTelegramEnabled: boolean;
+  telegramChatId?: string;
 }
 
 export interface UpdateMfaSettingsRequest {

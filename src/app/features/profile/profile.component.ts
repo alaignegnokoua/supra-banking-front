@@ -47,7 +47,10 @@ export class ProfileComponent implements OnInit {
 
   readonly preferencesForm = this.fb.nonNullable.group({
     notificationsInAppEnabled: [true],
-    notificationsEmailEnabled: [false]
+    notificationsEmailEnabled: [false],
+    notificationsSmsEnabled: [false],
+    notificationsTelegramEnabled: [false],
+    telegramChatId: ['']
   });
 
   readonly mfaForm = this.fb.nonNullable.group({
@@ -75,7 +78,10 @@ export class ProfileComponent implements OnInit {
 
       this.preferencesForm.patchValue({
         notificationsInAppEnabled: user.notificationsInAppEnabled ?? true,
-        notificationsEmailEnabled: user.notificationsEmailEnabled ?? false
+        notificationsEmailEnabled: user.notificationsEmailEnabled ?? false,
+        notificationsSmsEnabled: user.notificationsSmsEnabled ?? false,
+        notificationsTelegramEnabled: user.notificationsTelegramEnabled ?? false,
+        telegramChatId: user.telegramChatId ?? ''
       });
 
       this.mfaForm.patchValue({
@@ -157,7 +163,10 @@ export class ProfileComponent implements OnInit {
 
     this.authService.updateNotificationPreferences({
       notificationsInAppEnabled: value.notificationsInAppEnabled,
-      notificationsEmailEnabled: value.notificationsEmailEnabled
+      notificationsEmailEnabled: value.notificationsEmailEnabled,
+      notificationsSmsEnabled: value.notificationsSmsEnabled,
+      notificationsTelegramEnabled: value.notificationsTelegramEnabled,
+      telegramChatId: value.telegramChatId?.trim() || undefined
     }).subscribe({
       next: () => {
         this.preferencesLoading = false;

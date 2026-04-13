@@ -86,6 +86,21 @@
       <span>Recevoir les notifications par email</span>
     </label>
 
+    <label class="checkbox-field">
+      <input type="checkbox" formControlName="notificationsSmsEnabled" />
+      <span>Recevoir les notifications par SMS</span>
+    </label>
+
+    <label class="checkbox-field">
+      <input type="checkbox" formControlName="notificationsTelegramEnabled" />
+      <span>Recevoir les notifications sur Telegram</span>
+    </label>
+
+    <div class="field" *ngIf="preferencesForm.controls.notificationsTelegramEnabled.value">
+      <label for="telegramChatId">Telegram Chat ID</label>
+      <input id="telegramChatId" type="text" formControlName="telegramChatId" />
+    </div>
+
     <div *ngIf="preferencesError" class="alert alert-error">{{ preferencesError }}</div>
     <div *ngIf="preferencesSuccess" class="alert alert-success">{{ preferencesSuccess }}</div>
 
