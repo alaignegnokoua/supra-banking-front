@@ -117,6 +117,9 @@ export interface TransferRiskAssessment {
   multiBeneficiaryVelocityScore?: number;
   distinctBeneficiariesWindow?: number;
   externalTransfersWindow?: number;
+  unusualAmount?: boolean;
+  unusualAmountScore?: number;
+  historicalAverageAmount?: number;
 }
 
 export interface AuditRecord {
