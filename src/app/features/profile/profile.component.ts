@@ -22,6 +22,9 @@ export class ProfileComponent implements OnInit {
   preferencesLoading = false;
   preferencesSuccess: string | null = null;
   preferencesError: string | null = null;
+  mfaLoading = false;
+  mfaSuccess: string | null = null;
+  mfaError: string | null = null;
   audits: OperationAuditItem[] = [];
   auditsLoading = false;
   auditsError: string | null = null;
@@ -47,6 +50,10 @@ export class ProfileComponent implements OnInit {
     notificationsEmailEnabled: [false]
   });
 
+  readonly mfaForm = this.fb.nonNullable.group({
+    mfaEnabled: [false]
+  });
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -69,6 +76,10 @@ export class ProfileComponent implements OnInit {
       this.preferencesForm.patchValue({
         notificationsInAppEnabled: user.notificationsInAppEnabled ?? true,
         notificationsEmailEnabled: user.notificationsEmailEnabled ?? false
+      });
+
+      this.mfaForm.patchValue({
+        mfaEnabled: user.mfaEnabled ?? false
       });
     });
 
@@ -155,6 +166,29 @@ export class ProfileComponent implements OnInit {
       error: (err) => {
         this.preferencesLoading = false;
         this.preferencesError = err?.error?.message || 'Échec de mise à jour des préférences';
+      }
+    });
+  }
+
+  submitMfaSettings(): void {
+    this.mfaSuccess = null;
+    this.mfaError = null;
+
+    this.mfaLoading = true;
+    const value = this.mfaForm.getRawValue();
+
+    this.authService.updateMfaSettings({
+      mfaEnabled: value.mfaEnabled
+    }).subscribe({
+      next: () => {
+        this.mfaLoading = false;
+        this.mfaSuccess = value.mfaEnabled
+          ? 'MFA activée. Un code sera demandé à la connexion.'
+          : 'MFA désactivée.';
+      },
+      error: (err) => {
+        this.mfaLoading = false;
+        this.mfaError = err?.error?.message || 'Échec de mise à jour MFA';
       }
     });
   }

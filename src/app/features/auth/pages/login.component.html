@@ -36,6 +36,21 @@
         </div>
       </div>
 
+      <div class="form-group" *ngIf="mfaStep">
+        <label for="mfaCode">Code MFA</label>
+        <input
+          id="mfaCode"
+          type="text"
+          maxlength="6"
+          formControlName="mfaCode"
+          class="form-control"
+          placeholder="Code reçu par email"
+        />
+        <div *ngIf="mfaMessage" class="error-message" style="color: #2563eb;">
+          {{ mfaMessage }}
+        </div>
+      </div>
+
       <div *ngIf="error" class="alert alert-danger">
         {{ error }}
       </div>
@@ -45,7 +60,7 @@
         class="btn btn-primary btn-block"
         [disabled]="loginForm.invalid || loading"
       >
-        {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
+        {{ loading ? 'Connexion en cours...' : (mfaStep ? 'Valider le code MFA' : 'Se connecter') }}
       </button>
     </form>
 

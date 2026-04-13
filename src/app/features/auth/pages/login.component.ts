@@ -15,6 +15,8 @@ export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
   error: string | null = null;
+  mfaStep = false;
+  mfaMessage: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -23,7 +25,8 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      mfaCode: ['']
     });
   }
 
@@ -33,6 +36,10 @@ export class LoginComponent {
 
   get password() {
     return this.loginForm.get('password');
+  }
+
+  get mfaCode() {
+    return this.loginForm.get('mfaCode');
   }
 
   onSubmit(): void {
@@ -45,15 +52,22 @@ export class LoginComponent {
 
     const request: LoginRequest = {
       username: this.loginForm.value.username,
-      password: this.loginForm.value.password
+      password: this.loginForm.value.password,
+      mfaCode: this.loginForm.value.mfaCode?.trim() || undefined
     };
 
     this.authService.login(request).subscribe({
-      next: () => {
+      next: (response) => {
+        if (response?.mfaRequired) {
+          this.mfaStep = true;
+          this.mfaMessage = response.mfaMessage || 'Code MFA requis';
+          this.loading = false;
+          return;
+        }
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.error = 'Username ou mot de passe incorrect';
+        this.error = err?.error?.message || 'Username, mot de passe ou code MFA incorrect';
         this.loading = false;
       }
     });

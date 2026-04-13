@@ -6,6 +6,7 @@ import { environment } from '../../../environments/environment';
 export interface LoginRequest {
   username: string;
   password: string;
+  mfaCode?: string;
 }
 
 export interface RegisterRequest {
@@ -15,11 +16,13 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  token: string;
+  token?: string;
   tokenType?: string;
   expiresIn?: number;
   username?: string;
   roles?: string[];
+  mfaRequired?: boolean;
+  mfaMessage?: string;
 }
 
 export interface CurrentUser {
@@ -35,6 +38,7 @@ export interface CurrentUser {
   clientTelephone?: string;
   notificationsInAppEnabled?: boolean;
   notificationsEmailEnabled?: boolean;
+  mfaEnabled?: boolean;
 }
 
 export interface UpdateProfileRequest {
@@ -52,6 +56,10 @@ export interface ChangePasswordRequest {
 export interface UpdateNotificationPreferencesRequest {
   notificationsInAppEnabled: boolean;
   notificationsEmailEnabled: boolean;
+}
+
+export interface UpdateMfaSettingsRequest {
+  mfaEnabled: boolean;
 }
 
 @Injectable({
@@ -120,6 +128,12 @@ export class AuthService {
     );
   }
 
+  updateMfaSettings(request: UpdateMfaSettingsRequest): Observable<CurrentUser> {
+    return this.http.put<CurrentUser>(`${this.API_URL}/me/mfa`, request).pipe(
+      tap((user) => this.currentUserSubject.next(user))
+    );
+  }
+
   getToken(): string | null {
     return localStorage.getItem('auth_token');
   }
@@ -129,6 +143,10 @@ export class AuthService {
   }
 
   private handleAuthResponse(response: AuthResponse): void {
+    if (!response?.token) {
+      return;
+    }
+
     localStorage.setItem('auth_token', response.token);
     this.isAuthenticatedSubject.next(true);
     this.loadCurrentUser();

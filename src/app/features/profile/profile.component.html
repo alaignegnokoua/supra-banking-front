@@ -94,6 +94,22 @@
     </button>
   </form>
 
+  <form [formGroup]="mfaForm" (ngSubmit)="submitMfaSettings()" class="profile-card">
+    <h3>Sécurité MFA</h3>
+
+    <label class="checkbox-field">
+      <input type="checkbox" formControlName="mfaEnabled" />
+      <span>Activer la vérification en 2 étapes par code email</span>
+    </label>
+
+    <div *ngIf="mfaError" class="alert alert-error">{{ mfaError }}</div>
+    <div *ngIf="mfaSuccess" class="alert alert-success">{{ mfaSuccess }}</div>
+
+    <button class="btn btn-primary" type="submit" [disabled]="mfaLoading">
+      {{ mfaLoading ? 'Mise à jour...' : 'Mettre à jour MFA' }}
+    </button>
+  </form>
+
   <section class="profile-card">
     <div class="audit-header">
       <h3>Historique des opérations sensibles</h3>
