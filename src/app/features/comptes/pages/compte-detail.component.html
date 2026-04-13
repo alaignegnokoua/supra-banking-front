@@ -156,6 +156,7 @@
           <th>IBAN/RIB</th>
           <th>Banque</th>
           <th>Email</th>
+          <th>Réputation</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -165,6 +166,15 @@
           <td>{{ b.iban || b.rib || '-' }}</td>
           <td>{{ b.banque || '-' }}</td>
           <td>{{ b.email || '-' }}</td>
+          <td>
+            <span class="risk-badge"
+                  [class.low]="(b.reputationScore || 0) >= 80"
+                  [class.medium]="(b.reputationScore || 0) >= 60 && (b.reputationScore || 0) < 80"
+                  [class.high]="(b.reputationScore || 0) < 60"
+                  [title]="b.reputationRecommendation || ''">
+              {{ b.reputationScore || 0 }} ({{ b.reputationLevel || 'N/A' }})
+            </span>
+          </td>
           <td>
             <button class="btn btn-secondary" (click)="deleteBeneficiaire(b.id)">Supprimer</button>
           </td>
@@ -181,7 +191,9 @@
         <label>Bénéficiaire</label>
         <select [(ngModel)]="extBeneficiaireId">
           <option [ngValue]="null">Sélectionner...</option>
-          <option *ngFor="let b of beneficiaires" [ngValue]="b.id">{{ b.nom }} - {{ b.iban || b.rib }}</option>
+          <option *ngFor="let b of beneficiaires" [ngValue]="b.id">
+            {{ b.nom }} - {{ b.iban || b.rib }} - score {{ b.reputationScore || 0 }}
+          </option>
         </select>
       </div>
 

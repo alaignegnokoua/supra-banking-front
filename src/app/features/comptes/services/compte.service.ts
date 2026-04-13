@@ -70,6 +70,10 @@ export interface Beneficiaire {
   lastUsedAt?: string;
   status?: string;
   successfulTransfersCount?: number;
+  totalUsagesCount?: number;
+  reputationScore?: number;
+  reputationLevel?: string;
+  reputationRecommendation?: string;
 }
 
 export interface BeneficiaryUsageHistory {
