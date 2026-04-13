@@ -28,6 +28,20 @@ export interface DashboardStatistics {
   systemUptime: number;
 }
 
+export interface MonthlyReport {
+  year: number;
+  month: number;
+  totalTransactions: number;
+  totalTransactionsAmount: number;
+  totalInternalTransfers: number;
+  totalExternalTransfers: number;
+  blockedTransfers: number;
+  totalAuditEntries: number;
+  successfulAuditEntries: number;
+  failedAuditEntries: number;
+  summary: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -62,5 +76,21 @@ export class DashboardService {
 
   getTotalBeneficiaries(): Observable<{ totalBeneficiaries: number }> {
     return this.http.get<{ totalBeneficiaries: number }>(`${this.ADMIN_API_URL}/statistics/total-beneficiaries`);
+  }
+
+  getMonthlyReport(year: number, month: number): Observable<MonthlyReport> {
+    return this.http.get<MonthlyReport>(`${this.ADMIN_API_URL}/reports/monthly?year=${year}&month=${month}`);
+  }
+
+  exportMonthlyTransactionsCsv(year: number, month: number): Observable<Blob> {
+    return this.http.get(`${this.ADMIN_API_URL}/reports/monthly/transactions.csv?year=${year}&month=${month}`, {
+      responseType: 'blob'
+    });
+  }
+
+  exportMonthlyAuditsCsv(year: number, month: number): Observable<Blob> {
+    return this.http.get(`${this.ADMIN_API_URL}/reports/monthly/audits.csv?year=${year}&month=${month}`, {
+      responseType: 'blob'
+    });
   }
 }

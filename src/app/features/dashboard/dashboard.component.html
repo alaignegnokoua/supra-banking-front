@@ -187,6 +187,42 @@
         </div>
       </div>
 
+      <div class="admin-statistics-card" *ngIf="isAdmin()">
+        <div class="statistics-header">
+          <h3>Rapports mensuels</h3>
+          <div class="actions">
+            <input type="month" [(ngModel)]="selectedReportMonth" />
+            <button class="btn btn-refresh" (click)="loadMonthlyReport()">Charger</button>
+          </div>
+        </div>
+
+        <div *ngIf="monthlyReportLoading" class="loading">Chargement du rapport...</div>
+        <div *ngIf="monthlyReportError" class="alert-error">{{ monthlyReportError }}</div>
+
+        <div *ngIf="!monthlyReportLoading && monthlyReport" class="statistics-grid">
+          <div class="stat-category">
+            <h4>Transactions</h4>
+            <div class="stat-item"><span class="stat-label">Total</span><span class="stat-value">{{ monthlyReport.totalTransactions }}</span></div>
+            <div class="stat-item"><span class="stat-label">Montant total</span><span class="stat-value">{{ monthlyReport.totalTransactionsAmount | number: '1.2-2' }}</span></div>
+            <div class="stat-item"><span class="stat-label">Internes</span><span class="stat-value">{{ monthlyReport.totalInternalTransfers }}</span></div>
+            <div class="stat-item"><span class="stat-label">Externes</span><span class="stat-value">{{ monthlyReport.totalExternalTransfers }}</span></div>
+          </div>
+
+          <div class="stat-category fraud">
+            <h4>Audit / Fraude</h4>
+            <div class="stat-item"><span class="stat-label">Entrées audit</span><span class="stat-value">{{ monthlyReport.totalAuditEntries }}</span></div>
+            <div class="stat-item"><span class="stat-label">Succès</span><span class="stat-value">{{ monthlyReport.successfulAuditEntries }}</span></div>
+            <div class="stat-item"><span class="stat-label">Échecs</span><span class="stat-value alert">{{ monthlyReport.failedAuditEntries }}</span></div>
+            <div class="stat-item"><span class="stat-label">Bloqués</span><span class="stat-value alert">{{ monthlyReport.blockedTransfers }}</span></div>
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top: 1rem;">
+          <button class="btn btn-refresh" (click)="downloadTransactionsCsv()">Exporter transactions CSV</button>
+          <button class="btn btn-refresh" (click)="downloadAuditsCsv()">Exporter audits CSV</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

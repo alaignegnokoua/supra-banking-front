@@ -7,7 +7,7 @@ import { NotificationItem, NotificationService } from '../../core/services/notif
 import { Subject, interval } from 'rxjs';
 import { startWith, takeUntil } from 'rxjs/operators';
 import { AdminClient, AdminClientService, RiskProfile } from '../../core/services/admin-client.service';
-import { DashboardService, DashboardStatistics } from '../../core/services/dashboard.service';
+import { DashboardService, DashboardStatistics, MonthlyReport } from '../../core/services/dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,6 +37,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   dashboardLoading = false;
   dashboardError: string | null = null;
 
+  monthlyReport: MonthlyReport | null = null;
+  monthlyReportLoading = false;
+  monthlyReportError: string | null = null;
+  selectedReportMonth = this.getCurrentMonthInput();
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -48,6 +53,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private dashboardService: DashboardService
   ) {}
 
+  private getCurrentMonthInput(): string {
+    const now = new Date();
+    const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    return `${now.getFullYear()}-${month}`;
+  }
+
   ngOnInit(): void {
     interval(this.autoRefreshSeconds * 1000)
       .pipe(startWith(0), takeUntil(this.destroy$))
@@ -58,6 +69,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (this.isAdmin()) {
       this.loadDashboardStatistics();
       this.loadAdminClientsForRiskProfiles();
+      this.loadMonthlyReport();
     }
   }
 
@@ -196,5 +208,73 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.dashboardLoading = false;
       }
     });
+  }
+
+  loadMonthlyReport(): void {
+    const [yearText, monthText] = (this.selectedReportMonth || '').split('-');
+    const year = Number(yearText);
+    const month = Number(monthText);
+
+    if (!year || !month) {
+      this.monthlyReportError = 'Veuillez sélectionner un mois valide';
+      return;
+    }
+
+    this.monthlyReportLoading = true;
+    this.monthlyReportError = null;
+
+    this.dashboardService.getMonthlyReport(year, month).subscribe({
+      next: (report) => {
+        this.monthlyReport = report;
+        this.monthlyReportLoading = false;
+      },
+      error: () => {
+        this.monthlyReportError = 'Impossible de charger le rapport mensuel';
+        this.monthlyReportLoading = false;
+      }
+    });
+  }
+
+  downloadTransactionsCsv(): void {
+    const [yearText, monthText] = (this.selectedReportMonth || '').split('-');
+    const year = Number(yearText);
+    const month = Number(monthText);
+
+    if (!year || !month) {
+      this.monthlyReportError = 'Veuillez sélectionner un mois valide';
+      return;
+    }
+
+    this.dashboardService.exportMonthlyTransactionsCsv(year, month).subscribe({
+      next: (blob) => this.downloadBlob(blob, `transactions-${year}-${`${month}`.padStart(2, '0')}.csv`),
+      error: () => this.monthlyReportError = 'Échec du téléchargement des transactions CSV'
+    });
+  }
+
+  downloadAuditsCsv(): void {
+    const [yearText, monthText] = (this.selectedReportMonth || '').split('-');
+    const year = Number(yearText);
+    const month = Number(monthText);
+
+    if (!year || !month) {
+      this.monthlyReportError = 'Veuillez sélectionner un mois valide';
+      return;
+    }
+
+    this.dashboardService.exportMonthlyAuditsCsv(year, month).subscribe({
+      next: (blob) => this.downloadBlob(blob, `audits-${year}-${`${month}`.padStart(2, '0')}.csv`),
+      error: () => this.monthlyReportError = 'Échec du téléchargement des audits CSV'
+    });
+  }
+
+  private downloadBlob(blob: Blob, filename: string): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
   }
 }
