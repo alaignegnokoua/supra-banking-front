@@ -62,6 +62,16 @@
       >
         {{ loading ? 'Connexion en cours...' : (mfaStep ? 'Valider le code MFA' : 'Se connecter') }}
       </button>
+
+      <button
+        *ngIf="mfaStep"
+        type="button"
+        class="btn btn-secondary btn-block"
+        [disabled]="resendMfaLoading"
+        (click)="resendMfaCode()"
+      >
+        {{ resendMfaLoading ? 'Renvoi en cours...' : 'Renvoyer le code MFA' }}
+      </button>
     </form>
 
     <div class="auth-footer">

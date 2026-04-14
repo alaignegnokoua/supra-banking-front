@@ -17,6 +17,7 @@ export class LoginComponent {
   error: string | null = null;
   mfaStep = false;
   mfaMessage: string | null = null;
+  resendMfaLoading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -75,5 +76,30 @@ export class LoginComponent {
 
   navigateToRegister(): void {
     this.router.navigate(['/auth/register']);
+  }
+
+  resendMfaCode(): void {
+    if (!this.username?.value || !this.password?.value) {
+      this.error = 'Veuillez saisir username et mot de passe pour renvoyer le code MFA';
+      return;
+    }
+
+    this.resendMfaLoading = true;
+    this.error = null;
+
+    this.authService.login({
+      username: this.username.value,
+      password: this.password.value
+    }).subscribe({
+      next: (response) => {
+        this.mfaStep = !!response?.mfaRequired;
+        this.mfaMessage = response?.mfaMessage || 'Nouveau code MFA envoyé';
+        this.resendMfaLoading = false;
+      },
+      error: (err) => {
+        this.error = err?.error?.message || 'Échec du renvoi du code MFA';
+        this.resendMfaLoading = false;
+      }
+    });
   }
 }
